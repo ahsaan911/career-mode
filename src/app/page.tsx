@@ -27,8 +27,8 @@ function StatBar({ label, value }: { label: string; value: number }) {
   const color = value >= 85 ? "from-emerald-400 to-emerald-600" : value >= 70 ? "from-lime-400 to-lime-600" : value >= 55 ? "from-yellow-400 to-yellow-600" : value >= 40 ? "from-orange-400 to-orange-600" : "from-red-400 to-red-600";
   return (
     <div className="flex items-center gap-3">
-      <span className="w-32 text-sm text-gray-300">{label}</span>
-      <div className="flex-1 h-2.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+      <span className="w-32 text-sm text-[#F4F6FA]">{label}</span>
+      <div className="flex-1 h-2.5 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]">
         <div className={`h-full rounded-full bg-gradient-to-r ${color} transition-all duration-500`} style={{ width: `${value}%` }} />
       </div>
       <span className="w-8 text-right font-mono font-bold text-white text-sm">{Math.round(value)}</span>
@@ -195,58 +195,58 @@ export default function Home() {
   // ---- Onboarding ----
   if (onboarding || !player) {
     return (
-      <main className="min-h-screen bg-[#0a0f1a] text-white flex items-center justify-center p-4 relative overflow-hidden">
+      <main className="min-h-screen bg-[#080D16] text-white flex items-center justify-center p-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-900/40 via-transparent to-transparent" />
         <div className="relative w-full max-w-2xl">
           <div className="text-center mb-8">
             <div className="text-6xl mb-2">⚽</div>
             <h1 className="text-4xl font-black tracking-tight">IRL FC</h1>
-            <p className="text-gray-400 mt-2">Real-life football. Real progression.</p>
+            <p className="text-[#929FB2] mt-2">Real-life football. Real progression.</p>
           </div>
-          <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-800 space-y-6">
+          <div className="bg-[#131D2B] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#263244] space-y-6">
             <div>
-              <label className="block mb-2"><span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Player Name</span>
-                <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition text-lg" placeholder="Your name" />
+              <label className="block mb-2"><span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Player Name</span>
+                <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] focus:ring-2 focus:ring-[#C8FF45]/30 outline-none transition text-lg" placeholder="Your name" />
               </label>
             </div>
             <div>
-              <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Position</span>
+              <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Position</span>
               <div className="grid grid-cols-5 gap-2 mt-2">
                 {POSITIONS.map((p) => (
-                  <button key={p} onClick={() => setOPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${oPos === p ? "bg-green-600 text-white shadow-lg shadow-green-600/30" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{p}</button>
+                  <button key={p} onClick={() => setOPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${oPos === p ? "bg-[#C8FF45] text-[#080D16] shadow-lg shadow-[#C8FF45]/20" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{p}</button>
                 ))}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Preferred Foot</span>
+                <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Preferred Foot</span>
                 <div className="flex gap-2 mt-2">
                   {FEET.map((f) => (
-                    <button key={f} onClick={() => setOFoot(f)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${oFoot === f ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{f}</button>
+                    <button key={f} onClick={() => setOFoot(f)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${oFoot === f ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{f}</button>
                   ))}
                 </div>
               </div>
               <div>
-                <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Experience</span>
+                <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Experience</span>
                 <div className="flex gap-2 mt-2">
                   {EXPERIENCE.map((e) => (
-                    <button key={e} onClick={() => setOExp(e)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${oExp === e ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{e}</button>
+                    <button key={e} onClick={() => setOExp(e)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${oExp === e ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{e}</button>
                   ))}
                 </div>
               </div>
             </div>
             <div>
-              <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Development Goals (pick any)</span>
+              <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Development Goals (pick any)</span>
               <div className="flex flex-wrap gap-2 mt-2">
                 {GOALS.map((g) => (
-                  <button key={g} onClick={() => setOGoals((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g])} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${oGoals.includes(g) ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{g}</button>
+                  <button key={g} onClick={() => setOGoals((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g])} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${oGoals.includes(g) ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{g}</button>
                 ))}
               </div>
             </div>
-            <button onClick={startCareer} disabled={!oName.trim()} className="w-full py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-green-600/30 transition transform hover:scale-[1.02] active:scale-[0.98]">
+            <button onClick={startCareer} disabled={!oName.trim()} className="w-full py-4 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-[#C8FF45]/20 transition transform hover:scale-[1.02] active:scale-[0.98]">
               Start Career
             </button>
-            <p className="text-xs text-gray-500 text-center">Starting OVR ~50. Values are game estimates, not scientific measurements.</p>
+            <p className="text-xs text-[#929FB2] text-center">Starting OVR ~50. Values are game estimates, not scientific measurements.</p>
           </div>
         </div>
       </main>
@@ -264,40 +264,40 @@ export default function Home() {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-1">
-              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-yellow-500/20 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
+              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#C8FF45]/10 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
                 <div className="relative flex items-center gap-4 mb-5">
                   <div className="text-7xl font-black bg-gradient-to-b from-yellow-300 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg">{player.ovr}</div>
                   <div>
                     <div className="text-xl font-bold">{player.name}</div>
-                    <div className="text-sm text-gray-400">{player.position} · Lvl {player.level}</div>
+                    <div className="text-sm text-[#929FB2]">{player.position} · Lvl {player.level}</div>
                     <div className="text-xs text-yellow-500/80 uppercase tracking-widest mt-1">Overall</div>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Energy</span><span>{Math.round(player.energy)}/100</span></div>
-                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className={`h-full rounded-full bg-gradient-to-r ${energyColor} transition-all duration-700`} style={{ width: `${player.energy}%` }} /></div>
+                    <div className="flex justify-between text-xs text-[#929FB2] mb-1"><span>Energy</span><span>{Math.round(player.energy)}/100</span></div>
+                    <div className="h-3 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]"><div className={`h-full rounded-full bg-gradient-to-r ${energyColor} transition-all duration-700`} style={{ width: `${player.energy}%` }} /></div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Sharpness</span><span>{Math.round(player.sharpness)}/100</span></div>
-                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className={`h-full rounded-full bg-gradient-to-r ${sharpColor} transition-all duration-700`} style={{ width: `${player.sharpness}%` }} /></div>
+                    <div className="flex justify-between text-xs text-[#929FB2] mb-1"><span>Sharpness</span><span>{Math.round(player.sharpness)}/100</span></div>
+                    <div className="h-3 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]"><div className={`h-full rounded-full bg-gradient-to-r ${sharpColor} transition-all duration-700`} style={{ width: `${player.sharpness}%` }} /></div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>XP</span><span>{player.xp}/{player.xpToNext}</span></div>
-                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-700" style={{ width: `${(player.xp / player.xpToNext) * 100}%` }} /></div>
+                    <div className="flex justify-between text-xs text-[#929FB2] mb-1"><span>XP</span><span>{player.xp}/{player.xpToNext}</span></div>
+                    <div className="h-3 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-700" style={{ width: `${(player.xp / player.xpToNext) * 100}%` }} /></div>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400"><span>Form</span><span className="font-bold text-white">{Math.round(player.form)}</span></div>
+                  <div className="flex justify-between text-xs text-[#929FB2]"><span>Form</span><span className="font-bold text-white">{Math.round(player.form)}</span></div>
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-2">
-                  <button onClick={() => setScreen("training")} className="py-2 rounded-xl bg-green-600/20 hover:bg-green-600/40 text-green-400 text-xs font-bold border border-green-600/30 transition">Train</button>
-                  <button onClick={() => setScreen("match")} className="py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-bold border border-blue-600/30 transition">Match</button>
-                  <button onClick={() => setScreen("mentor")} className="py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 text-xs font-bold border border-purple-600/30 transition">Mentor</button>
+                  <button onClick={() => setScreen("training")} className="py-2 rounded-lg bg-[#C8FF45]/20 hover:bg-[#C8FF45]/40 text-[#C8FF45] text-xs font-bold border border-[#C8FF45]/30 transition">Train</button>
+                  <button onClick={() => setScreen("match")} className="py-2 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-bold border border-blue-600/30 transition">Match</button>
+                  <button onClick={() => setScreen("mentor")} className="py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 text-xs font-bold border border-purple-600/30 transition">Mentor</button>
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-1 bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
-              <h2 className="font-bold mb-4 text-green-400 flex items-center gap-2"><span>⚡</span> Attributes</h2>
+            <div className="lg:col-span-1 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <h2 className="font-bold mb-4 text-[#C8FF45] flex items-center gap-2"><span>⚡</span> Attributes</h2>
               <div className="space-y-3">
                 <StatBar label="Pace" value={c.pace} />
                 <StatBar label="Shooting" value={c.shooting} />
@@ -306,23 +306,23 @@ export default function Home() {
                 <StatBar label="Defending" value={c.defending} />
                 <StatBar label="Physical" value={c.physical} />
               </div>
-              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-green-400 hover:text-green-300 transition">View all attributes →</button>
+              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-[#C8FF45] hover:text-[#C8FF45] transition">View all attributes →</button>
             </div>
             <div className="lg:col-span-1 space-y-4">
-              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
-                <h2 className="font-bold mb-3 text-green-400 flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+                <h2 className="font-bold mb-3 text-[#C8FF45] flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
                 <ul className="space-y-2">
-                  {tips.map((t, i) => <li key={i} className="text-sm text-gray-200 bg-gray-800/50 rounded-xl px-3 py-2 border border-gray-700/50">{t}</li>)}
+                  {tips.map((t, i) => <li key={i} className="text-sm text-[#F4F6FA] bg-[#131D2B] rounded-lg px-3 py-2 border border-[#263244]">{t}</li>)}
                 </ul>
               </div>
-              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
-                <h2 className="font-bold mb-3 text-green-400 flex items-center gap-2"><span>📋</span> Recent Activity</h2>
-                {player.history.length === 0 && <p className="text-sm text-gray-500">No activity yet. Start training!</p>}
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+                <h2 className="font-bold mb-3 text-[#C8FF45] flex items-center gap-2"><span>📋</span> Recent Activity</h2>
+                {player.history.length === 0 && <p className="text-sm text-[#929FB2]">No activity yet. Start training!</p>}
                 <ul className="space-y-1.5">
                   {player.history.slice(0, 6).map((h, i) => (
-                    <li key={i} className="text-sm text-gray-300 flex justify-between bg-gray-800/40 rounded-lg px-3 py-1.5">
+                    <li key={i} className="text-sm text-[#F4F6FA] flex justify-between bg-[#131D2B] rounded-lg px-3 py-1.5">
                       <span className="truncate">{h.kind}</span>
-                      <span className="text-gray-500 text-xs ml-2 shrink-0">{h.delta}</span>
+                      <span className="text-[#929FB2] text-xs ml-2 shrink-0">{h.delta}</span>
                     </li>
                   ))}
                 </ul>
@@ -334,25 +334,25 @@ export default function Home() {
       case "player":
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-green-400">My Player</h2>
-            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+            <h2 className="text-2xl font-bold text-[#C8FF45]">My Player</h2>
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-bold text-lg mb-3">Info</h3>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-gray-400">Name</span><span className="font-bold">{player.name}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Position</span><span className="font-bold">{player.position}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Foot</span><span className="font-bold">{player.foot}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Experience</span><span className="font-bold">{player.experience}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Level</span><span className="font-bold">{player.level}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Best OVR</span><span className="font-bold">{player.bestOvr}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Streak</span><span className="font-bold">{player.streak} days</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Name</span><span className="font-bold">{player.name}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Position</span><span className="font-bold">{player.position}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Foot</span><span className="font-bold">{player.foot}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Experience</span><span className="font-bold">{player.experience}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Level</span><span className="font-bold">{player.level}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Best OVR</span><span className="font-bold">{player.bestOvr}</span></div>
+                    <div className="flex justify-between"><span className="text-[#929FB2]">Streak</span><span className="font-bold">{player.streak} days</span></div>
                   </div>
                   {player.goals.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Goals</div>
+                      <div className="text-xs uppercase tracking-widest text-[#929FB2] mb-2">Goals</div>
                       <div className="flex flex-wrap gap-2">
-                        {player.goals.map((g) => <span key={g} className="px-2 py-1 rounded-full bg-green-600/20 text-green-400 text-xs border border-green-600/30">{g}</span>)}
+                        {player.goals.map((g) => <span key={g} className="px-2 py-1 rounded-full bg-[#C8FF45]/20 text-[#C8FF45] text-xs border border-[#C8FF45]/30">{g}</span>)}
                       </div>
                     </div>
                   )}
@@ -370,12 +370,12 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
               <h3 className="font-bold text-lg mb-4">All Attributes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2">
                 {Object.entries(player.attrs).filter(([, v]) => typeof v === "number").map(([k, v]) => (
-                  <div key={k} className="flex justify-between text-sm py-1 border-b border-gray-800">
-                    <span className="text-gray-400 capitalize">{k.replace(/([A-Z])/g, " $1").trim()}</span>
+                  <div key={k} className="flex justify-between text-sm py-1 border-b border-[#263244]">
+                    <span className="text-[#929FB2] capitalize">{k.replace(/([A-Z])/g, " $1").trim()}</span>
                     <span className="font-mono font-bold text-white">{Math.round(v as number)}</span>
                   </div>
                 ))}
@@ -388,28 +388,28 @@ export default function Home() {
         return (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-green-400">Training Ground</h2>
-              <p className="text-gray-400 text-sm mt-1">Choose a drill, record your result, earn XP and attribute gains.</p>
+              <h2 className="text-2xl font-bold text-[#C8FF45]">Training Ground</h2>
+              <p className="text-[#929FB2] text-sm mt-1">Choose a drill, record your result, earn XP and attribute gains.</p>
             </div>
             <div className="flex gap-2 mb-2">
-              <button onClick={() => setEvidenceMode("manual")} className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${evidenceMode === "manual" ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400"}`}>Manual Entry</button>
-              <button onClick={() => setEvidenceMode("camera")} className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${evidenceMode === "camera" ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400"}`}>Camera Analysis</button>
+              <button onClick={() => setEvidenceMode("manual")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "manual" ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Manual Entry</button>
+              <button onClick={() => setEvidenceMode("camera")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "camera" ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Camera Analysis</button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {DRILLS.map((d) => (
                 <button
                   key={d.id}
                   onClick={() => { setSelectedDrill(d.id); setVideoFile(null); setVideoUrl(null); setLastResult(null); }}
-                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-green-500 bg-green-900/30 shadow-lg shadow-green-500/10 scale-[1.02]" : "border-gray-800 bg-gray-900/60 hover:bg-gray-800/60 hover:border-gray-700"}`}
+                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-[#C8FF45] bg-[#C8FF45]/10 shadow-lg shadow-[#C8FF45]/10 scale-[1.02]" : "border-[#263244] bg-[#131D2B] hover:bg-[#131D2B] hover:border-[#263244]"}`}
                 >
                   <div className="text-3xl mb-1">{d.emoji}</div>
                   <div className="font-bold text-sm">{d.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">{d.category}</div>
+                  <div className="text-xs text-[#929FB2] mt-1">{d.category}</div>
                 </button>
               ))}
             </div>
             {selectedDrill && (
-              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800 space-y-4">
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244] space-y-4">
                 {(() => {
                   const d = DRILLS.find((x) => x.id === selectedDrill)!;
                   return (
@@ -418,38 +418,38 @@ export default function Home() {
                         <div className="text-4xl">{d.emoji}</div>
                         <div>
                           <h3 className="font-bold text-lg">{d.name}</h3>
-                          <p className="text-sm text-gray-400">{d.desc}</p>
-                          <div className="text-xs text-gray-500 mt-1">Energy cost {d.cost} · +{d.xp} XP base · Primary: {Object.keys(d.weights).join(", ")}</div>
+                          <p className="text-sm text-[#929FB2]">{d.desc}</p>
+                          <div className="text-xs text-[#929FB2] mt-1">Energy cost {d.cost} · +{d.xp} XP base · Primary: {Object.keys(d.weights).join(", ")}</div>
                         </div>
                       </div>
                       {evidenceMode === "manual" && (
                         <div className="space-y-3">
                           <label className="block">
-                            <span className="text-sm text-gray-300">Reps completed: {manualReps}</span>
-                            <input type="range" min={1} max={40} value={manualReps} onChange={(e) => setManualReps(Number(e.target.value))} className="w-full accent-green-500" />
+                            <span className="text-sm text-[#F4F6FA]">Reps completed: {manualReps}</span>
+                            <input type="range" min={1} max={40} value={manualReps} onChange={(e) => setManualReps(Number(e.target.value))} className="w-full accent-[#C8FF45]" />
                           </label>
-                          <button onClick={runManual} disabled={player.energy < 5} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 font-bold shadow-lg shadow-green-600/20 transition">Log Session</button>
+                          <button onClick={runManual} disabled={player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 font-bold shadow-lg shadow-[#C8FF45]/20 transition">Log Session</button>
                         </div>
                       )}
                       {evidenceMode === "camera" && (
                         <>
                           <label className="block">
-                            <div className="border-2 border-dashed border-gray-700 hover:border-green-500 rounded-2xl p-6 text-center cursor-pointer transition">
+                            <div className="border-2 border-dashed border-[#263244] hover:border-[#C8FF45] rounded-2xl p-6 text-center cursor-pointer transition">
                               <div className="text-3xl mb-2">📹</div>
-                              <div className="text-sm text-gray-300">Click to select a video file</div>
-                              <div className="text-xs text-gray-500 mt-1">MP4, MOV, WebM supported</div>
+                              <div className="text-sm text-[#F4F6FA]">Click to select a video file</div>
+                              <div className="text-xs text-[#929FB2] mt-1">MP4, MOV, WebM supported</div>
                             </div>
                             <input ref={fileRef} type="file" accept="video/*" onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])} className="hidden" />
                           </label>
-                          {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-gray-800" />}
-                          <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 font-bold shadow-lg shadow-green-600/20 transition">
+                          {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-[#263244]" />}
+                          <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 font-bold shadow-lg shadow-[#C8FF45]/20 transition">
                             {analyzing ? `Analyzing... ${Math.round(progress)}%` : "Analyze & Apply Gains"}
                           </button>
-                          {analyzing && <div className="h-2 bg-gray-800 rounded-full overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
+                          {analyzing && <div className="h-2 bg-[#0D1420] rounded-full overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
                         </>
                       )}
-                      {lastResult && <p className="text-sm text-gray-200 bg-gray-800/60 p-4 rounded-2xl border border-gray-700">{lastResult}</p>}
-                      <p className="text-xs text-gray-500">Energy: {Math.round(player.energy)}/100. Low energy reduces gains.</p>
+                      {lastResult && <p className="text-sm text-[#F4F6FA] bg-[#131D2B] p-4 rounded-2xl border border-[#263244]">{lastResult}</p>}
+                      <p className="text-xs text-[#929FB2]">Energy: {Math.round(player.energy)}/100. Low energy reduces gains.</p>
                     </>
                   );
                 })()}
@@ -461,20 +461,20 @@ export default function Home() {
       case "match":
         return (
           <div className="max-w-2xl">
-            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
-              <h2 className="text-2xl font-bold text-green-400 mb-1">Match Centre</h2>
-              <p className="text-gray-400 text-sm mb-6">Record a match to boost sharpness, form and XP.</p>
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <h2 className="text-2xl font-bold text-[#C8FF45] mb-1">Match Centre</h2>
+              <p className="text-[#929FB2] text-sm mb-6">Record a match to boost sharpness, form and XP.</p>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <label className="block"><span className="text-xs text-gray-400">Opponent</span><input value={mOpponent} onChange={(e) => setMOpponent(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" placeholder="Team name" /></label>
-                <label className="block"><span className="text-xs text-gray-400">Competition</span><input value={mCompetition} onChange={(e) => setMCompetition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
-                <label className="block"><span className="text-xs text-gray-400">Position</span><input value={mPosition} onChange={(e) => setMPosition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
-                <label className="block"><span className="text-xs text-gray-400">Minutes</span><input type="number" value={mMinutes} onChange={(e) => setMMinutes(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
-                <label className="block"><span className="text-xs text-gray-400">Result</span>
-                  <select value={mResult} onChange={(e) => setMResult(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none">
+                <label className="block"><span className="text-xs text-[#929FB2]">Opponent</span><input value={mOpponent} onChange={(e) => setMOpponent(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" placeholder="Team name" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Competition</span><input value={mCompetition} onChange={(e) => setMCompetition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Position</span><input value={mPosition} onChange={(e) => setMPosition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Minutes</span><input type="number" value={mMinutes} onChange={(e) => setMMinutes(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Result</span>
+                  <select value={mResult} onChange={(e) => setMResult(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none">
                     <option>W</option><option>D</option><option>L</option>
                   </select>
                 </label>
-                <label className="block"><span className="text-xs text-gray-400">Rating (1-10)</span><input type="number" min={1} max={10} value={mRating} onChange={(e) => setMRating(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Rating (1-10)</span><input type="number" min={1} max={10} value={mRating} onChange={(e) => setMRating(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
@@ -490,24 +490,24 @@ export default function Home() {
                   { label: "Sprints", val: mSprints, set: setMSprints },
                 ].map((f) => (
                   <label key={f.label} className="block">
-                    <span className="text-xs text-gray-400">{f.label}</span>
-                    <input type="number" min={0} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" />
+                    <span className="text-xs text-[#929FB2]">{f.label}</span>
+                    <input type="number" min={0} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" />
                   </label>
                 ))}
               </div>
-              <button onClick={logMatch} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 font-bold shadow-lg shadow-green-600/20 transition">Log Match</button>
+              <button onClick={logMatch} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] font-bold shadow-lg shadow-[#C8FF45]/20 transition">Log Match</button>
             </div>
             {player.matches.length > 0 && (
-              <div className="mt-6 bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <div className="mt-6 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-4">Match History</h3>
                 <div className="space-y-2">
                   {player.matches.slice(0, 10).map((m) => (
-                    <div key={m.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 text-sm">
+                    <div key={m.id} className="bg-[#131D2B] rounded-lg p-3 border border-[#263244] text-sm">
                       <div className="flex justify-between items-center">
                         <span className="font-bold">vs {m.opponent}</span>
-                        <span className="text-gray-400">{new Date(m.date).toLocaleDateString()}</span>
+                        <span className="text-[#929FB2]">{new Date(m.date).toLocaleDateString()}</span>
                       </div>
-                      <div className="text-gray-300 mt-1">{m.result} · {m.goals}G {m.assists}A · Rating {m.rating} · {m.minutes}min</div>
+                      <div className="text-[#F4F6FA] mt-1">{m.result} · {m.goals}G {m.assists}A · Rating {m.rating} · {m.minutes}min</div>
                     </div>
                   ))}
                 </div>
@@ -518,26 +518,26 @@ export default function Home() {
 
       case "mentor":
         return (
-          <div className="bg-gray-900/60 backdrop-blur rounded-3xl border border-gray-800 flex flex-col h-[70vh] overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
+          <div className="bg-[#131D2B] backdrop-blur rounded-2xl border border-[#263244] flex flex-col h-[70vh] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#263244] flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl">🧠</div>
               <div>
                 <div className="font-bold">AI Mentor</div>
-                <div className="text-xs text-gray-400">Your pro football coach (rule-based demo mode)</div>
+                <div className="text-xs text-[#929FB2]">Your pro football coach (rule-based demo mode)</div>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-3">
               {chatLog.map((c, i) => (
                 <div key={i} className={`flex ${c.who === "you" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${c.who === "you" ? "bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-br-md" : "bg-gray-800 text-gray-100 rounded-bl-md border border-gray-700"}`}>
+                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${c.who === "you" ? "bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] text-white rounded-br-md" : "bg-[#0D1420] text-gray-100 rounded-bl-md border border-[#263244]"}`}>
                     {c.text}
                   </div>
                 </div>
               ))}
             </div>
-            <div className="p-4 border-t border-gray-800 flex gap-2">
-              <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition" />
-              <button onClick={sendChat} className="px-5 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
+            <div className="p-4 border-t border-[#263244] flex gap-2">
+              <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] focus:ring-2 focus:ring-[#C8FF45]/30 outline-none transition" />
+              <button onClick={sendChat} className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
             </div>
           </div>
         );
@@ -545,45 +545,45 @@ export default function Home() {
       case "history":
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-green-400">Career History</h2>
+            <h2 className="text-2xl font-bold text-[#C8FF45]">Career History</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">OVR & Level</h3>
                 <div className="text-5xl font-black text-yellow-400">{player.ovr}</div>
-                <div className="text-sm text-gray-400 mt-1">Best: {player.bestOvr} · Level {player.level} · {player.xp} XP</div>
+                <div className="text-sm text-[#929FB2] mt-1">Best: {player.bestOvr} · Level {player.level} · {player.xp} XP</div>
                 <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-400">Sessions</span><span className="font-bold">{player.drillsDone}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-400">Matches</span><span className="font-bold">{player.matchesPlayed}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-400">Streak</span><span className="font-bold">{player.streak} days</span></div>
-                  <div className="flex justify-between"><span className="text-gray-400">Form</span><span className="font-bold">{Math.round(player.form)}</span></div>
+                  <div className="flex justify-between"><span className="text-[#929FB2]">Sessions</span><span className="font-bold">{player.drillsDone}</span></div>
+                  <div className="flex justify-between"><span className="text-[#929FB2]">Matches</span><span className="font-bold">{player.matchesPlayed}</span></div>
+                  <div className="flex justify-between"><span className="text-[#929FB2]">Streak</span><span className="font-bold">{player.streak} days</span></div>
+                  <div className="flex justify-between"><span className="text-[#929FB2]">Form</span><span className="font-bold">{Math.round(player.form)}</span></div>
                 </div>
               </div>
-              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">Achievements ({player.achievements.length})</h3>
-                {player.achievements.length === 0 && <p className="text-sm text-gray-500">No achievements yet. Keep training!</p>}
+                {player.achievements.length === 0 && <p className="text-sm text-[#929FB2]">No achievements yet. Keep training!</p>}
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {player.achievements.map((a) => (
-                    <div key={a.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                    <div key={a.id} className="bg-[#131D2B] rounded-lg p-3 border border-[#263244]">
                       <div className="font-bold text-sm text-yellow-400">{a.name}</div>
-                      <div className="text-xs text-gray-400">{a.desc}</div>
+                      <div className="text-xs text-[#929FB2]">{a.desc}</div>
                       <div className="text-xs text-gray-600 mt-1">{new Date(a.date).toLocaleDateString()}</div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
               <h3 className="font-bold text-lg mb-3">Training Sessions ({player.sessions.length})</h3>
-              {player.sessions.length === 0 && <p className="text-sm text-gray-500">No sessions yet.</p>}
+              {player.sessions.length === 0 && <p className="text-sm text-[#929FB2]">No sessions yet.</p>}
               <div className="space-y-2 max-h-80 overflow-y-auto">
                 {player.sessions.map((s: Session) => (
-                  <div key={s.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 text-sm">
+                  <div key={s.id} className="bg-[#131D2B] rounded-lg p-3 border border-[#263244] text-sm">
                     <div className="flex justify-between">
                       <span className="font-bold">{s.drill}</span>
-                      <span className="text-gray-400 text-xs">{new Date(s.date).toLocaleDateString()}</span>
+                      <span className="text-[#929FB2] text-xs">{new Date(s.date).toLocaleDateString()}</span>
                     </div>
-                    <div className="text-gray-300 mt-1">{s.reps} reps · {s.evidence} · +{s.xp} XP</div>
-                    {s.changes.length > 0 && <div className="text-xs text-green-400 mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
+                    <div className="text-[#F4F6FA] mt-1">{s.reps} reps · {s.evidence} · +{s.xp} XP</div>
+                    {s.changes.length > 0 && <div className="text-xs text-[#C8FF45] mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
                   </div>
                 ))}
               </div>
@@ -594,15 +594,15 @@ export default function Home() {
       case "settings":
         return (
           <div className="max-w-lg space-y-4">
-            <h2 className="text-2xl font-bold text-green-400">Settings</h2>
-            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800 space-y-4">
-              <div className="text-sm text-gray-300">
+            <h2 className="text-2xl font-bold text-[#C8FF45]">Settings</h2>
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244] space-y-4">
+              <div className="text-sm text-[#F4F6FA]">
                 <p className="mb-2"><span className="font-bold">Persistence:</span> localStorage (single device). For multi-device, configure Supabase.</p>
                 <p className="mb-2"><span className="font-bold">AI Mentor:</span> Rule-based demo mode (no API key). Set OPENAI_API_KEY on server for live AI.</p>
                 <p className="mb-2"><span className="font-bold">Camera:</span> MediaPipe pose runs in-browser. No footage uploaded.</p>
               </div>
-              <button onClick={() => { if (confirm("Delete all player data?")) reset(); }} className="w-full py-3 rounded-xl bg-red-900/50 hover:bg-red-800/60 text-red-300 font-bold border border-red-900/50 transition">Delete Player Data</button>
-              <button onClick={() => { localStorage.removeItem("irlfc_player"); location.reload(); }} className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold border border-gray-700 transition">Clear & Reload</button>
+              <button onClick={() => { if (confirm("Delete all player data?")) reset(); }} className="w-full py-3 rounded-lg bg-red-900/50 hover:bg-red-800/60 text-red-300 font-bold border border-red-900/50 transition">Delete Player Data</button>
+              <button onClick={() => { localStorage.removeItem("irlfc_player"); location.reload(); }} className="w-full py-3 rounded-lg bg-[#0D1420] hover:bg-gray-700 text-[#F4F6FA] font-bold border border-[#263244] transition">Clear & Reload</button>
             </div>
           </div>
         );
@@ -613,34 +613,34 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] text-white flex">
+    <main className="min-h-screen bg-[#080D16] text-white flex">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex flex-col w-60 bg-gray-900/80 border-r border-gray-800 p-4 sticky top-0 h-screen">
+      <aside className="hidden md:flex flex-col w-60 bg-[#131D2B] border-r border-[#263244] p-4 sticky top-0 h-screen">
         <div className="flex items-center gap-2 mb-6 px-2">
           <div className="text-2xl">⚽</div>
           <div className="font-black text-lg tracking-tight">IRL FC</div>
         </div>
-        <div className="bg-gray-800/60 rounded-2xl p-3 mb-4 border border-gray-700/50">
+        <div className="bg-[#131D2B] rounded-2xl p-3 mb-4 border border-[#263244]">
           <div className="text-sm font-bold truncate">{player.name}</div>
-          <div className="text-xs text-gray-400">{player.position} · {player.ovr} OVR</div>
+          <div className="text-xs text-[#929FB2]">{player.position} · {player.ovr} OVR</div>
         </div>
         <nav className="flex-1 space-y-1">
           {NAV.map((n) => (
-            <button key={n.id} onClick={() => setScreen(n.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${screen === n.id ? "bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg shadow-green-600/20" : "text-gray-400 hover:bg-gray-800/60 hover:text-white"}`}>
+            <button key={n.id} onClick={() => setScreen(n.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition ${screen === n.id ? "bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] text-white shadow-lg shadow-[#C8FF45]/20" : "text-[#929FB2] hover:bg-[#131D2B] hover:text-white"}`}>
               <span>{n.icon}</span>{n.label}
             </button>
           ))}
         </nav>
-        <button onClick={restDay} className="mt-2 w-full py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition">Rest Day</button>
+        <button onClick={restDay} className="mt-2 w-full py-2 rounded-lg bg-[#0D1420] hover:bg-gray-700 text-sm font-semibold transition">Rest Day</button>
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-gray-900/90 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#0D1420]/95 backdrop-blur border-b border-[#263244] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="text-xl">⚽</div>
           <div className="font-black">IRL FC</div>
         </div>
-        <div className="text-xs text-gray-400">{player.name} · {player.ovr}</div>
+        <div className="text-xs text-[#929FB2]">{player.name} · {player.ovr}</div>
       </div>
 
       {/* Main content */}
@@ -652,9 +652,9 @@ export default function Home() {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-gray-900/95 backdrop-blur border-t border-gray-800 flex justify-around py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0D1420]/95 backdrop-blur border-t border-[#263244] flex justify-around py-2">
         {NAV.slice(0, 5).map((n) => (
-          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-green-400" : "text-gray-500"}`}>
+          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-[#C8FF45]" : "text-[#929FB2]"}`}>
             <span className="text-lg">{n.icon}</span>
             <span className="truncate max-w-[60px]">{n.label.split(" ")[0]}</span>
           </button>
