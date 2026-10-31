@@ -15,13 +15,13 @@ const EXPERIENCE = ["Beginner", "Intermediate", "Advanced"];
 const GOALS = ["Improve pace", "Improve finishing", "Improve passing", "Improve dribbling", "Improve defending", "Improve fitness", "Play more matches"];
 
 const NAV = [
-  { id: "dash", label: "Dashboard", icon: "🏠" },
-  { id: "player", label: "My Player", icon: "👤" },
-  { id: "training", label: "Training Ground", icon: "🏋️" },
-  { id: "match", label: "Match Centre", icon: "⚽" },
-  { id: "mentor", label: "AI Mentor", icon: "🧠" },
-  { id: "history", label: "Career History", icon: "📈" },
-  { id: "settings", label: "Settings", icon: "⚙️" },
+  { id: "dash", label: "Dashboard", icon: "D" },
+  { id: "player", label: "My Player", icon: "P" },
+  { id: "training", label: "Training", icon: "T" },
+  { id: "match", label: "Matches", icon: "M" },
+  { id: "mentor", label: "AI Mentor", icon: "A" },
+  { id: "history", label: "History", icon: "H" },
+  { id: "settings", label: "Settings", icon: "S" },
 ];
 
 function StatBar({ label, value }: { label: string; value: number }) {
@@ -87,6 +87,7 @@ export default function Home() {
 
   // mentor chat
   const [chatInput, setChatInput] = useState("");
+  const [showMoreNav, setShowMoreNav] = useState(false);
   const [chatLog, setChatLog] = useState<{ who: string; text: string }[]>([
     { who: "mentor", text: "Hey! I'm your pro football mentor. Ask me anything about training, stats, or matches." },
   ]);
@@ -147,7 +148,7 @@ export default function Home() {
       const result = applyDrill(p2, selectedDrill, res.reps, "camera", submissionId);
       if (result) {
         setPlayer(p2);
-        setLastResult(`Analyzed ${res.frames} frames over ${res.duration.toFixed(1)}s. Detected ${res.reps} reps. ${res.note} OVR ${before} → ${p2.ovr}. +${result.xp} XP.`);
+        setLastResult(`Analyzed ${res.frames} frames over ${res.duration.toFixed(1)}s. Detected ${res.reps} reps. ${res.note} OVR ${before} ? ${p2.ovr}. +${result.xp} XP.`);
       } else {
         setLastResult("Duplicate submission ignored.");
       }
@@ -166,7 +167,7 @@ export default function Home() {
     const result = applyDrill(p2, selectedDrill, manualReps, "manual", submissionId);
     if (result) {
       setPlayer(p2);
-      setLastResult(`Logged ${manualReps} reps manually. OVR ${before} → ${p2.ovr}. +${result.xp} XP.`);
+      setLastResult(`Logged ${manualReps} reps manually. OVR ${before} ? ${p2.ovr}. +${result.xp} XP.`);
     } else {
       setLastResult("Duplicate submission ignored.");
     }
@@ -209,11 +210,11 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-900/40 via-transparent to-transparent" />
         <div className="relative w-full max-w-2xl">
           <div className="text-center mb-8">
-            <div className="text-6xl mb-2">⚽</div>
+            <div className="text-6xl mb-2">?</div>
             <h1 className="text-4xl font-black tracking-tight">IRL FC</h1>
             <p className="text-[#929FB2] mt-2">Real-life football. Real progression.</p>
           </div>
-          <div className="bg-[#131D2B] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#263244] space-y-6">
+          <div className="bg-[#131D2B] -xl rounded-lg p-8 shadow-lg border border-[#263244] space-y-6">
             <div>
               <label className="block mb-2"><span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Player Name</span>
                 <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] focus:ring-2 focus:ring-[#FF1E3C]/30 outline-none transition text-lg" placeholder="Your name" />
@@ -274,14 +275,14 @@ export default function Home() {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-1">
-              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#FF1E3C]/10 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
+              <div className="relative rounded-lg overflow-hidden bg-[#111111] border border-yellow-500/30 shadow-lg p-6">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
                 <div className="relative flex items-center gap-4 mb-5">
-                  <div className="text-7xl font-black bg-gradient-to-b from-yellow-300 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg">{player.ovr}</div>
+                  <div className="text-7xl font-black text-[#FF1E3C]">{player.ovr}</div>
                   <div>
                     <div className="text-xl font-bold">{player.name}</div>
-                    <div className="text-sm text-[#929FB2]">{player.position} · Lvl {player.level}</div>
-                    <div className="text-xs text-yellow-500/80 uppercase tracking-widest mt-1">Overall</div>
+                    <div className="text-sm text-[#929FB2]">{player.position} � Lvl {player.level}</div>
+                    <div className="text-xs text-[#808080] uppercase tracking-widest mt-1">Overall</div>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -295,7 +296,7 @@ export default function Home() {
                   </div>
                   <div>
                     <div className="flex justify-between text-xs text-[#929FB2] mb-1"><span>XP</span><span>{player.xp}/{player.xpToNext}</span></div>
-                    <div className="h-3 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-700" style={{ width: `${(player.xp / player.xpToNext) * 100}%` }} /></div>
+                    <div className="h-3 bg-[#0D1420] rounded-full overflow-hidden border border-[#263244]"><div className="h-full rounded-full bg-[#FF1E3C] transition-all duration-700" style={{ width: `${(player.xp / player.xpToNext) * 100}%` }} /></div>
                   </div>
                   <div className="flex justify-between text-xs text-[#929FB2]"><span>Form</span><span className="font-bold text-white">{Math.round(player.form)}</span></div>
                 </div>
@@ -306,8 +307,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-1 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-              <h2 className="font-bold mb-4 text-[#FF1E3C] flex items-center gap-2"><span>⚡</span> Attributes</h2>
+            <div className="lg:col-span-1 bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
+              <h2 className="font-bold mb-4 text-[#FF1E3C] flex items-center gap-2"><span>?</span> Attributes</h2>
               <div className="space-y-3">
                 <StatBar label="Pace" value={c.pace} />
                 <StatBar label="Shooting" value={c.shooting} />
@@ -316,17 +317,32 @@ export default function Home() {
                 <StatBar label="Defending" value={c.defending} />
                 <StatBar label="Physical" value={c.physical} />
               </div>
-              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-[#FF1E3C] hover:text-[#FF1E3C] transition">View all attributes →</button>
+              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-[#FF1E3C] hover:text-[#FF1E3C] transition">View all attributes</button>
+            </div>
+            <div className="bg-[#111111] border border-[#2A2A2A] rounded-lg p-6 mt-4">
+              <div className="text-xs font-bold text-[#808080] uppercase tracking-widest mb-3">OVR Progression</div>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={[{session:1,ovr:player.ovr}]}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
+                    <XAxis dataKey="session" stroke="#808080" fontSize={11} />
+                    <YAxis stroke="#808080" fontSize={11} domain={[40,99]} />
+                    <Tooltip contentStyle={{background:"#111111",border:"1px solid #2A2A2A",borderRadius:"8px",color:"#FFFFFF"}} />
+                    <Line type="monotone" dataKey="ovr" stroke="#FF1E3C" strokeWidth={2} dot={{fill:"#FF1E3C",r:3}} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-xs text-[#808080] mt-2 text-center">Current: {player.ovr} / Best: {player.bestOvr}</p>
             </div>
             <div className="lg:col-span-1 space-y-4">
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
+              <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
+                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>??</span> Mentor Tips</h2>
                 <ul className="space-y-2">
                   {tips.map((t, i) => <li key={i} className="text-sm text-[#F4F6FA] bg-[#131D2B] rounded-lg px-3 py-2 border border-[#263244]">{t}</li>)}
                 </ul>
               </div>
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>📋</span> Recent Activity</h2>
+              <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
+                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>??</span> Recent Activity</h2>
                 {player.history.length === 0 && <p className="text-sm text-[#929FB2]">No activity yet. Start training!</p>}
                 <ul className="space-y-1.5">
                   {player.history.slice(0, 6).map((h, i) => (
@@ -345,7 +361,7 @@ export default function Home() {
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-[#FF1E3C]">My Player</h2>
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+            <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-bold text-lg mb-3">Info</h3>
@@ -380,27 +396,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-              <h3 className="font-bold text-lg mb-3">Attribute Radar</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={[
-                    { subject: "Pace", value: c.pace },
-                    { subject: "Shooting", value: c.shooting },
-                    { subject: "Passing", value: c.passing },
-                    { subject: "Dribbling", value: c.dribbling },
-                    { subject: "Defending", value: c.defending },
-                    { subject: "Physical", value: c.physical },
-                  ]}>
-                    <PolarGrid stroke="#2A2A2A" />
-                    <PolarAngleAxis dataKey="subject" stroke="#808080" fontSize={11} />
-                    <PolarRadiusAxis angle={30} domain={[0, 99]} stroke="#2A2A2A" fontSize={9} />
-                    <Radar name="Attributes" dataKey="value" stroke="#FF1E3C" fill="#FF1E3C" fillOpacity={0.2} strokeWidth={2} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+            <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
               <h3 className="font-bold text-lg mb-4">All Attributes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2">
                 {Object.entries(player.attrs).filter(([, v]) => typeof v === "number").map(([k, v]) => (
@@ -430,7 +426,7 @@ export default function Home() {
                 <button
                   key={d.id}
                   onClick={() => { setSelectedDrill(d.id); setVideoFile(null); setVideoUrl(null); setLastResult(null); }}
-                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-[#FF1E3C] bg-[#FF1E3C]/10 shadow-lg shadow-[#FF1E3C]/10 scale-[1.02]" : "border-[#263244] bg-[#131D2B] hover:bg-[#131D2B] hover:border-[#263244]"}`}
+                  className={`p-4 rounded-lg border text-left transition-all ${selectedDrill === d.id ? "border-[#FF1E3C] bg-[#FF1E3C]/10 shadow-lg shadow-[#FF1E3C]/10 scale-[1.02]" : "border-[#263244] bg-[#131D2B] hover:bg-[#131D2B] hover:border-[#263244]"}`}
                 >
                   <div className="text-3xl mb-1">{d.emoji}</div>
                   <div className="font-bold text-sm">{d.name}</div>
@@ -439,7 +435,7 @@ export default function Home() {
               ))}
             </div>
             {selectedDrill && (
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244] space-y-4">
+              <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244] space-y-4">
                 {(() => {
                   const d = DRILLS.find((x) => x.id === selectedDrill)!;
                   return (
@@ -449,7 +445,7 @@ export default function Home() {
                         <div>
                           <h3 className="font-bold text-lg">{d.name}</h3>
                           <p className="text-sm text-[#929FB2]">{d.desc}</p>
-                          <div className="text-xs text-[#929FB2] mt-1">Energy cost {d.cost} · +{d.xp} XP base · Primary: {Object.keys(d.weights).join(", ")}</div>
+                          <div className="text-xs text-[#929FB2] mt-1">Energy cost {d.cost} � +{d.xp} XP base � Primary: {Object.keys(d.weights).join(", ")}</div>
                         </div>
                       </div>
                       {evidenceMode === "manual" && (
@@ -464,21 +460,21 @@ export default function Home() {
                       {evidenceMode === "camera" && (
                         <>
                           <label className="block">
-                            <div className="border-2 border-dashed border-[#263244] hover:border-[#FF1E3C] rounded-2xl p-6 text-center cursor-pointer transition">
-                              <div className="text-3xl mb-2">📹</div>
+                            <div className="border-2 border-dashed border-[#263244] hover:border-[#FF1E3C] rounded-lg p-6 text-center cursor-pointer transition">
+                              <div className="text-3xl mb-2">??</div>
                               <div className="text-sm text-[#F4F6FA]">Click to select a video file</div>
                               <div className="text-xs text-[#929FB2] mt-1">MP4, MOV, WebM supported</div>
                             </div>
                             <input ref={fileRef} type="file" accept="video/*" onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])} className="hidden" />
                           </label>
-                          {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-[#263244]" />}
+                          {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-lg bg-black border border-[#263244]" />}
                           <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] disabled:opacity-40 font-bold shadow-lg shadow-[#FF1E3C]/20 transition">
                             {analyzing ? `Analyzing... ${Math.round(progress)}%` : "Analyze & Apply Gains"}
                           </button>
-                          {analyzing && <div className="h-2 bg-[#0D1420] rounded-full overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
+                          {analyzing && <div className="h-2 bg-[#0D1420] rounded-full overflow-hidden"><div className="h-full rounded-full bg-[#FF1E3C] transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
                         </>
                       )}
-                      {lastResult && <p className="text-sm text-[#F4F6FA] bg-[#131D2B] p-4 rounded-2xl border border-[#263244]">{lastResult}</p>}
+                      {lastResult && <p className="text-sm text-[#F4F6FA] bg-[#131D2B] p-4 rounded-lg border border-[#263244]">{lastResult}</p>}
                       <p className="text-xs text-[#929FB2]">Energy: {Math.round(player.energy)}/100. Low energy reduces gains.</p>
                     </>
                   );
@@ -491,7 +487,7 @@ export default function Home() {
       case "match":
         return (
           <div className="max-w-2xl">
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+            <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
               <h2 className="text-2xl font-bold text-[#FF1E3C] mb-1">Match Centre</h2>
               <p className="text-[#929FB2] text-sm mb-6">Record a match to boost sharpness, form and XP.</p>
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -528,7 +524,7 @@ export default function Home() {
               <button onClick={logMatch} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] font-bold shadow-lg shadow-[#FF1E3C]/20 transition">Log Match</button>
             </div>
             {player.matches.length > 0 && (
-              <div className="mt-6 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <div className="mt-6 bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-4">Match History</h3>
                 <div className="space-y-2">
                   {player.matches.slice(0, 10).map((m) => (
@@ -537,7 +533,7 @@ export default function Home() {
                         <span className="font-bold">vs {m.opponent}</span>
                         <span className="text-[#929FB2]">{new Date(m.date).toLocaleDateString()}</span>
                       </div>
-                      <div className="text-[#F4F6FA] mt-1">{m.result} · {m.goals}G {m.assists}A · Rating {m.rating} · {m.minutes}min</div>
+                      <div className="text-[#F4F6FA] mt-1">{m.result} � {m.goals}G {m.assists}A � Rating {m.rating} � {m.minutes}min</div>
                     </div>
                   ))}
                 </div>
@@ -548,9 +544,9 @@ export default function Home() {
 
       case "mentor":
         return (
-          <div className="bg-[#131D2B] backdrop-blur rounded-2xl border border-[#263244] flex flex-col h-[70vh] overflow-hidden">
+          <div className="bg-[#131D2B]  rounded-lg border border-[#263244] flex flex-col h-[70vh] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#263244] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl">🧠</div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl">??</div>
               <div>
                 <div className="font-bold">AI Mentor</div>
                 <div className="text-xs text-[#929FB2]">Your pro football coach (rule-based demo mode)</div>
@@ -559,7 +555,7 @@ export default function Home() {
             <div className="flex-1 overflow-y-auto p-6 space-y-3">
               {chatLog.map((c, i) => (
                 <div key={i} className={`flex ${c.who === "you" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${c.who === "you" ? "bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] text-white rounded-br-md" : "bg-[#0D1420] text-gray-100 rounded-bl-md border border-[#263244]"}`}>
+                  <div className={`max-w-[80%] px-4 py-2.5 rounded-lg text-sm ${c.who === "you" ? "bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] text-white rounded-br-md" : "bg-[#0D1420] text-gray-100 rounded-bl-md border border-[#263244]"}`}>
                     {c.text}
                   </div>
                 </div>
@@ -567,7 +563,7 @@ export default function Home() {
             </div>
             <div className="p-4 border-t border-[#263244] flex gap-2">
               <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] focus:ring-2 focus:ring-[#FF1E3C]/30 outline-none transition" />
-              <button onClick={sendChat} className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
+              <button onClick={sendChat} className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] font-semibold transition transform hover:scale-105 active:scale-95">?</button>
             </div>
           </div>
         );
@@ -577,25 +573,10 @@ export default function Home() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-[#FF1E3C]">Career History</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-                <h3 className="font-bold text-lg mb-3">OVR Progression</h3>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={player.sessions.slice().reverse().map((s, i) => ({ session: i + 1, ovr: player.ovr }))}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
-                      <XAxis dataKey="session" stroke="#808080" fontSize={11} />
-                      <YAxis stroke="#808080" fontSize={11} domain={[40, 99]} />
-                      <Tooltip contentStyle={{ background: "#131D2B", border: "1px solid #2A2A2A", borderRadius: "8px", color: "#FFFFFF" }} />
-                      <Line type="monotone" dataKey="ovr" stroke="#FF1E3C" strokeWidth={2} dot={{ fill: "#FF1E3C", r: 3 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <p className="text-xs text-[#808080] mt-2 text-center">Current OVR: {player.ovr} / Best: {player.bestOvr}</p>
-              </div>
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">OVR & Level</h3>
                 <div className="text-5xl font-black text-yellow-400">{player.ovr}</div>
-                <div className="text-sm text-[#929FB2] mt-1">Best: {player.bestOvr} · Level {player.level} · {player.xp} XP</div>
+                <div className="text-sm text-[#929FB2] mt-1">Best: {player.bestOvr} � Level {player.level} � {player.xp} XP</div>
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-[#929FB2]">Sessions</span><span className="font-bold">{player.drillsDone}</span></div>
                   <div className="flex justify-between"><span className="text-[#929FB2]">Matches</span><span className="font-bold">{player.matchesPlayed}</span></div>
@@ -603,7 +584,7 @@ export default function Home() {
                   <div className="flex justify-between"><span className="text-[#929FB2]">Form</span><span className="font-bold">{Math.round(player.form)}</span></div>
                 </div>
               </div>
-              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">Achievements ({player.achievements.length})</h3>
                 {player.achievements.length === 0 && <p className="text-sm text-[#929FB2]">No achievements yet. Keep training!</p>}
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -617,7 +598,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+            <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244]">
               <h3 className="font-bold text-lg mb-3">Training Sessions ({player.sessions.length})</h3>
               {player.sessions.length === 0 && <p className="text-sm text-[#929FB2]">No sessions yet.</p>}
               <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -627,8 +608,8 @@ export default function Home() {
                       <span className="font-bold">{s.drill}</span>
                       <span className="text-[#929FB2] text-xs">{new Date(s.date).toLocaleDateString()}</span>
                     </div>
-                    <div className="text-[#F4F6FA] mt-1">{s.reps} reps · {s.evidence} · +{s.xp} XP</div>
-                    {s.changes.length > 0 && <div className="text-xs text-[#FF1E3C] mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
+                    <div className="text-[#F4F6FA] mt-1">{s.reps} reps � {s.evidence} � +{s.xp} XP</div>
+                    {s.changes.length > 0 && <div className="text-xs text-[#FF1E3C] mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "?" + ch.after).join(", ")}</div>}
                   </div>
                 ))}
               </div>
@@ -640,7 +621,7 @@ export default function Home() {
         return (
           <div className="max-w-lg space-y-4">
             <h2 className="text-2xl font-bold text-[#FF1E3C]">Settings</h2>
-            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244] space-y-4">
+            <div className="bg-[#131D2B]  rounded-lg p-6 border border-[#263244] space-y-4">
               <div className="text-sm text-[#F4F6FA]">
                 <p className="mb-2"><span className="font-bold">Persistence:</span> localStorage (single device). For multi-device, configure Supabase.</p>
                 <p className="mb-2"><span className="font-bold">AI Mentor:</span> Rule-based demo mode (no API key). Set OPENAI_API_KEY on server for live AI.</p>
@@ -662,12 +643,12 @@ export default function Home() {
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex flex-col w-60 bg-[#131D2B] border-r border-[#263244] p-4 sticky top-0 h-screen">
         <div className="flex items-center gap-2 mb-6 px-2">
-          <div className="text-2xl">⚽</div>
+          <div className="text-2xl">?</div>
           <div className="font-black text-lg tracking-tight">IRL FC</div>
         </div>
-        <div className="bg-[#131D2B] rounded-2xl p-3 mb-4 border border-[#263244]">
+        <div className="bg-[#131D2B] rounded-lg p-3 mb-4 border border-[#263244]">
           <div className="text-sm font-bold truncate">{player.name}</div>
-          <div className="text-xs text-[#929FB2]">{player.position} · {player.ovr} OVR</div>
+          <div className="text-xs text-[#929FB2]">{player.position} � {player.ovr} OVR</div>
         </div>
         <nav className="flex-1 space-y-1">
           {NAV.map((n) => (
@@ -680,12 +661,12 @@ export default function Home() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#0D1420]/95 backdrop-blur border-b border-[#263244] px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#0D1420]/95  border-b border-[#263244] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-xl">⚽</div>
+          <div className="text-xl">?</div>
           <div className="font-black">IRL FC</div>
         </div>
-        <div className="text-xs text-[#929FB2]">{player.name} · {player.ovr}</div>
+        <div className="text-xs text-[#929FB2]">{player.name} � {player.ovr}</div>
       </div>
 
       {/* Main content */}
@@ -697,14 +678,29 @@ export default function Home() {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0D1420]/95 backdrop-blur border-t border-[#263244] flex justify-around py-2">
-        {NAV.slice(0, 5).map((n) => (
-          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-[#FF1E3C]" : "text-[#929FB2]"}`}>
-            <span className="text-lg">{n.icon}</span>
-            <span className="truncate max-w-[60px]">{n.label.split(" ")[0]}</span>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#0A0A0A]/95  border-t border-[#2A2A2A] flex justify-around py-2 px-1">
+        {NAV.slice(0, 4).map((n) => (
+          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1.5 rounded text-[10px] font-bold transition-colors min-w-[52px] uppercase ${screen === n.id ? "text-[#FF1E3C]" : "text-[#808080]"}`}>
+            <span className="text-lg mb-0.5">{n.icon}</span>
+            <span className="truncate max-w-[52px]">{n.label}</span>
           </button>
         ))}
+        <button onClick={() => setShowMoreNav(!showMoreNav)} className={`flex flex-col items-center px-2 py-1.5 rounded text-[10px] font-bold transition-colors min-w-[52px] uppercase ${showMoreNav ? "text-[#FF1E3C]" : "text-[#808080]"}`}>
+          <span className="text-lg mb-0.5">+</span>
+          <span>More</span>
+        </button>
       </nav>
+      {showMoreNav && (
+        <div className="md:hidden fixed inset-0 z-40" onClick={() => setShowMoreNav(false)}>
+          <div className="absolute bottom-16 right-2 bg-[#111111] border border-[#2A2A2A] rounded-lg shadow-lg p-2 min-w-[160px]" onClick={(e) => e.stopPropagation()}>
+            {NAV.slice(4).map((n) => (
+              <button key={n.id} onClick={() => { setScreen(n.id); setShowMoreNav(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-colors ${screen === n.id ? "bg-[#FF1E3C]/10 text-[#FF1E3C]" : "text-[#808080] hover:text-white hover:bg-[#1A1A1A]"}`}>
+                <span>{n.icon}</span>{n.label.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
