@@ -7,6 +7,7 @@ import {
   type Player, type Match, type Session,
 } from "@/lib/stats";
 import { analyzeVideo } from "@/lib/pose";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, BarChart, Bar } from "recharts";
 
 const POSITIONS = ["ST", "LW", "RW", "CAM", "CM", "CDM", "CB", "LB", "RB", "GK"];
 const FEET = ["Right", "Left", "Both"];
@@ -380,6 +381,26 @@ export default function Home() {
               </div>
             </div>
             <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+              <h3 className="font-bold text-lg mb-3">Attribute Radar</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={[
+                    { subject: "Pace", value: c.pace },
+                    { subject: "Shooting", value: c.shooting },
+                    { subject: "Passing", value: c.passing },
+                    { subject: "Dribbling", value: c.dribbling },
+                    { subject: "Defending", value: c.defending },
+                    { subject: "Physical", value: c.physical },
+                  ]}>
+                    <PolarGrid stroke="#2A2A2A" />
+                    <PolarAngleAxis dataKey="subject" stroke="#808080" fontSize={11} />
+                    <PolarRadiusAxis angle={30} domain={[0, 99]} stroke="#2A2A2A" fontSize={9} />
+                    <Radar name="Attributes" dataKey="value" stroke="#FF1E3C" fill="#FF1E3C" fillOpacity={0.2} strokeWidth={2} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
               <h3 className="font-bold text-lg mb-4">All Attributes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2">
                 {Object.entries(player.attrs).filter(([, v]) => typeof v === "number").map(([k, v]) => (
@@ -556,6 +577,21 @@ export default function Home() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-[#FF1E3C]">Career History</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
+                <h3 className="font-bold text-lg mb-3">OVR Progression</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={player.sessions.slice().reverse().map((s, i) => ({ session: i + 1, ovr: player.ovr }))}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
+                      <XAxis dataKey="session" stroke="#808080" fontSize={11} />
+                      <YAxis stroke="#808080" fontSize={11} domain={[40, 99]} />
+                      <Tooltip contentStyle={{ background: "#131D2B", border: "1px solid #2A2A2A", borderRadius: "8px", color: "#FFFFFF" }} />
+                      <Line type="monotone" dataKey="ovr" stroke="#FF1E3C" strokeWidth={2} dot={{ fill: "#FF1E3C", r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-xs text-[#808080] mt-2 text-center">Current OVR: {player.ovr} / Best: {player.bestOvr}</p>
+              </div>
               <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">OVR & Level</h3>
                 <div className="text-5xl font-black text-yellow-400">{player.ovr}</div>
