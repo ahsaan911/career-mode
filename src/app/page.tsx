@@ -1,40 +1,33 @@
 ﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
-import { createPlayer, applyDecay, applyDrill, applyMatch, mentorTips, mentorChat, recalcOvr, type Player, type DrillResult } from "@/lib/stats";
+import {
+  createPlayer, applyDecay, applyDrill, applyMatch, mentorTips, mentorChat, recalcOvr,
+  categoriesOf, checkAchievements, loadPlayer, savePlayer, DRILLS,
+  type Player, type Match, type Session,
+} from "@/lib/stats";
 import { analyzeVideo } from "@/lib/pose";
 
-const DRILLS = [
-  { id: "sprint", name: "Max Sprint", emoji: "🏃", desc: "5 max-effort sprints. Boosts acceleration most.", cost: 20 },
-  { id: "jump", name: "Vertical Jump", emoji: "🦘", desc: "Jump as high as you can. Boosts jumping.", cost: 20 },
-  { id: "shuttle", name: "Shuttle Run", emoji: "↔️", desc: "Back-and-forth sprints. Boosts pace + stamina.", cost: 20 },
-  { id: "plank", name: "Plank Hold", emoji: "🧘", desc: "Hold plank. Boosts strength + stamina.", cost: 15 },
-];
-
 const POSITIONS = ["ST", "LW", "RW", "CAM", "CM", "CDM", "CB", "LB", "RB", "GK"];
+const FEET = ["Right", "Left", "Both"];
+const EXPERIENCE = ["Beginner", "Intermediate", "Advanced"];
+const GOALS = ["Improve pace", "Improve finishing", "Improve passing", "Improve dribbling", "Improve defending", "Improve fitness", "Play more matches"];
 
-function loadPlayer(): Player | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem("career_player");
-    if (!raw) return null;
-    const p = JSON.parse(raw) as Player;
-    applyDecay(p);
-    return p;
-  } catch {
-    return null;
-  }
-}
-
-function savePlayer(p: Player) {
-  localStorage.setItem("career_player", JSON.stringify(p));
-}
+const NAV = [
+  { id: "dash", label: "Dashboard", icon: "🏠" },
+  { id: "player", label: "My Player", icon: "👤" },
+  { id: "training", label: "Training Ground", icon: "🏋️" },
+  { id: "match", label: "Match Centre", icon: "⚽" },
+  { id: "mentor", label: "AI Mentor", icon: "🧠" },
+  { id: "history", label: "Career History", icon: "📈" },
+  { id: "settings", label: "Settings", icon: "⚙️" },
+];
 
 function StatBar({ label, value }: { label: string; value: number }) {
   const color = value >= 85 ? "from-emerald-400 to-emerald-600" : value >= 70 ? "from-lime-400 to-lime-600" : value >= 55 ? "from-yellow-400 to-yellow-600" : value >= 40 ? "from-orange-400 to-orange-600" : "from-red-400 to-red-600";
   return (
-    <div className="flex items-center gap-3 group">
-      <span className="w-32 text-sm text-gray-300 group-hover:text-white transition">{label}</span>
+    <div className="flex items-center gap-3">
+      <span className="w-32 text-sm text-gray-300">{label}</span>
       <div className="flex-1 h-2.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
         <div className={`h-full rounded-full bg-gradient-to-r ${color} transition-all duration-500`} style={{ width: `${value}%` }} />
       </div>
@@ -45,24 +38,44 @@ function StatBar({ label, value }: { label: string; value: number }) {
 
 export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
-  const [tab, setTab] = useState<"dash" | "drills" | "match" | "mentor">("dash");
+  const [screen, setScreen] = useState("dash");
   const [onboarding, setOnboarding] = useState(true);
-  const [name, setName] = useState("");
-  const [pos, setPos] = useState("ST");
+  // onboarding state
+  const [oName, setOName] = useState("");
+  const [oPos, setOPos] = useState("ST");
+  const [oFoot, setOFoot] = useState("Right");
+  const [oExp, setOExp] = useState("Intermediate");
+  const [oGoals, setOGoals] = useState<string[]>([]);
 
+  // training state
   const [selectedDrill, setSelectedDrill] = useState<string | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [manualReps, setManualReps] = useState(5);
+  const [evidenceMode, setEvidenceMode] = useState<"camera" | "manual">("manual");
 
+  // match state
+  const [mOpponent, setMOpponent] = useState("");
+  const [mCompetition, setMCompetition] = useState("League");
+  const [mPosition, setMPosition] = useState("");
+  const [mMinutes, setMMinutes] = useState(90);
+  const [mResult, setMResult] = useState("W");
   const [mGoals, setMGoals] = useState(0);
   const [mAssists, setMAssists] = useState(0);
-  const [mDistance, setMDistance] = useState(5);
-  const [mSprints, setMSprints] = useState(10);
+  const [mShots, setMShots] = useState(0);
+  const [mChances, setMChances] = useState(0);
+  const [mPassC, setMPassC] = useState(0);
+  const [mPassA, setMPassA] = useState(0);
+  const [mInt, setMInt] = useState(0);
+  const [mTackles, setMTackles] = useState(0);
+  const [mDistance, setMDistance] = useState(8);
+  const [mSprints, setMSprints] = useState(15);
   const [mRating, setMRating] = useState(7);
 
+  // mentor chat
   const [chatInput, setChatInput] = useState("");
   const [chatLog, setChatLog] = useState<{ who: string; text: string }[]>([
     { who: "mentor", text: "Hey! I'm your pro football mentor. Ask me anything about training, stats, or matches." },
@@ -75,6 +88,7 @@ export default function Home() {
     if (p) {
       setPlayer(p);
       setOnboarding(false);
+      if (p.position) setMPosition(p.position);
     }
   }, []);
 
@@ -83,15 +97,16 @@ export default function Home() {
   }, [player]);
 
   const startCareer = () => {
-    if (!name.trim()) return;
-    const p = createPlayer(name.trim(), pos);
+    if (!oName.trim()) return;
+    const p = createPlayer(oName.trim(), oPos, oFoot, oExp, oGoals);
     setPlayer(p);
     setOnboarding(false);
-    setTab("dash");
+    setScreen("dash");
+    setMPosition(oPos);
   };
 
   const reset = () => {
-    localStorage.removeItem("career_player");
+    localStorage.removeItem("irlfc_player");
     setPlayer(null);
     setOnboarding(true);
   };
@@ -116,25 +131,56 @@ export default function Home() {
     setProgress(0);
     try {
       const res = await analyzeVideo(videoFile, selectedDrill, (pct) => setProgress(pct));
-      const drillRes: DrillResult = { reps: res.reps, metrics: res.note };
+      const submissionId = "cam_" + Date.now();
       const before = player.ovr;
       const p2 = JSON.parse(JSON.stringify(player)) as Player;
-      applyDrill(p2, selectedDrill, drillRes);
-      setPlayer(p2);
-      setLastResult(`Analyzed ${res.frames} frames over ${res.duration.toFixed(1)}s. Detected ${res.reps} reps. ${res.note} OVR ${before} → ${p2.ovr}.`);
+      const result = applyDrill(p2, selectedDrill, res.reps, "camera", submissionId);
+      if (result) {
+        setPlayer(p2);
+        setLastResult(`Analyzed ${res.frames} frames over ${res.duration.toFixed(1)}s. Detected ${res.reps} reps. ${res.note} OVR ${before} → ${p2.ovr}. +${result.xp} XP.`);
+      } else {
+        setLastResult("Duplicate submission ignored.");
+      }
     } catch (e: any) {
-      setLastResult("Analysis failed: " + (e?.message || e) + ". Try a shorter/clearer video.");
+      setLastResult("Analysis failed: " + (e?.message || e) + ". Try a shorter/clearer video, or use manual entry.");
     } finally {
       setAnalyzing(false);
     }
   };
 
+  const runManual = () => {
+    if (!player || !selectedDrill) return;
+    const submissionId = "man_" + Date.now();
+    const before = player.ovr;
+    const p2 = JSON.parse(JSON.stringify(player)) as Player;
+    const result = applyDrill(p2, selectedDrill, manualReps, "manual", submissionId);
+    if (result) {
+      setPlayer(p2);
+      setLastResult(`Logged ${manualReps} reps manually. OVR ${before} → ${p2.ovr}. +${result.xp} XP.`);
+    } else {
+      setLastResult("Duplicate submission ignored.");
+    }
+  };
+
   const logMatch = () => {
     if (!player) return;
+    const m: Match = {
+      id: "match_" + Date.now(),
+      date: Date.now(),
+      opponent: mOpponent || "Opponent",
+      competition: mCompetition,
+      position: mPosition || player.position,
+      minutes: mMinutes,
+      result: mResult,
+      goals: mGoals, assists: mAssists, shots: mShots, chancesCreated: mChances,
+      passesCompleted: mPassC, passesAttempted: mPassA, interceptions: mInt, tackles: mTackles,
+      distance: mDistance, sprints: mSprints, rating: mRating,
+    };
     const p2 = JSON.parse(JSON.stringify(player)) as Player;
-    applyMatch(p2, { goals: mGoals, assists: mAssists, distance: mDistance, sprints: mSprints, rating: mRating });
+    const { xp } = applyMatch(p2, m);
     setPlayer(p2);
-    setTab("dash");
+    setScreen("dash");
+    alert("Match logged! +" + xp + " XP");
   };
 
   const sendChat = () => {
@@ -146,77 +192,77 @@ export default function Home() {
     setChatInput("");
   };
 
+  // ---- Onboarding ----
   if (onboarding || !player) {
     return (
       <main className="min-h-screen bg-[#0a0f1a] text-white flex items-center justify-center p-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-900/40 via-transparent to-transparent" />
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-2xl">
           <div className="text-center mb-8">
             <div className="text-6xl mb-2">⚽</div>
-            <h1 className="text-4xl font-black tracking-tight">Career Mode</h1>
+            <h1 className="text-4xl font-black tracking-tight">IRL FC</h1>
             <p className="text-gray-400 mt-2">Real-life football. Real progression.</p>
           </div>
-          <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-800">
-            <label className="block mb-5">
-              <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Player Name</span>
-              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition text-lg" placeholder="Your name" />
-            </label>
-            <label className="block mb-6">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-800 space-y-6">
+            <div>
+              <label className="block mb-2"><span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Player Name</span>
+                <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition text-lg" placeholder="Your name" />
+              </label>
+            </div>
+            <div>
               <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Position</span>
               <div className="grid grid-cols-5 gap-2 mt-2">
                 {POSITIONS.map((p) => (
-                  <button key={p} onClick={() => setPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${pos === p ? "bg-green-600 text-white shadow-lg shadow-green-600/30" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{p}</button>
+                  <button key={p} onClick={() => setOPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${oPos === p ? "bg-green-600 text-white shadow-lg shadow-green-600/30" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{p}</button>
                 ))}
               </div>
-            </label>
-            <button onClick={startCareer} disabled={!name.trim()} className="w-full py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-green-600/30 transition transform hover:scale-[1.02] active:scale-[0.98]">
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Preferred Foot</span>
+                <div className="flex gap-2 mt-2">
+                  {FEET.map((f) => (
+                    <button key={f} onClick={() => setOFoot(f)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${oFoot === f ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{f}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Experience</span>
+                <div className="flex gap-2 mt-2">
+                  {EXPERIENCE.map((e) => (
+                    <button key={e} onClick={() => setOExp(e)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${oExp === e ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{e}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Development Goals (pick any)</span>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {GOALS.map((g) => (
+                  <button key={g} onClick={() => setOGoals((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g])} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${oGoals.includes(g) ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{g}</button>
+                ))}
+              </div>
+            </div>
+            <button onClick={startCareer} disabled={!oName.trim()} className="w-full py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-green-600/30 transition transform hover:scale-[1.02] active:scale-[0.98]">
               Start Career
             </button>
-            <p className="text-xs text-gray-500 mt-4 text-center">Starting OVR ~50. Train hard, stay sharp.</p>
+            <p className="text-xs text-gray-500 text-center">Starting OVR ~50. Values are game estimates, not scientific measurements.</p>
           </div>
         </div>
       </main>
     );
   }
 
-  const a = player.attrs;
+  const c = categoriesOf(player);
   const tips = mentorTips(player);
-
   const energyColor = player.energy >= 60 ? "from-blue-500 to-cyan-400" : player.energy >= 30 ? "from-yellow-500 to-orange-400" : "from-red-500 to-red-700";
   const sharpColor = player.sharpness >= 60 ? "from-purple-500 to-pink-400" : player.sharpness >= 30 ? "from-yellow-500 to-orange-400" : "from-red-500 to-red-700";
 
-  return (
-    <main className="min-h-screen bg-[#0a0f1a] text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-20 backdrop-blur-xl bg-gray-900/70 border-b border-gray-800">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">⚽</div>
-            <div>
-              <div className="font-bold leading-tight">{player.name}</div>
-              <div className="text-xs text-gray-400">{player.position} · {player.drillsDone} drills · {player.matchesPlayed} matches</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={restDay} className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-700 transition">Rest Day</button>
-            <button onClick={reset} className="px-3 py-1.5 text-sm bg-red-900/50 hover:bg-red-800/60 text-red-300 rounded-lg border border-red-900/50 transition">Reset</button>
-          </div>
-        </div>
-      </header>
-
-      {/* Nav */}
-      <nav className="max-w-6xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto">
-        {(["dash", "drills", "match", "mentor"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-5 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all ${tab === t ? "bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg shadow-green-600/20 scale-105" : "bg-gray-800/60 text-gray-400 hover:bg-gray-700/60 hover:text-white"}`}>
-            {t === "dash" ? "Dashboard" : t === "drills" ? "Drills" : t === "match" ? "Match Log" : "Mentor"}
-          </button>
-        ))}
-      </nav>
-
-      <div className="max-w-6xl mx-auto p-4 pb-12">
-        {tab === "dash" && (
+  const renderScreen = () => {
+    switch (screen) {
+      case "dash":
+        return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* FIFA Card */}
             <div className="lg:col-span-1">
               <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-yellow-500/20 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
@@ -224,60 +270,44 @@ export default function Home() {
                   <div className="text-7xl font-black bg-gradient-to-b from-yellow-300 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg">{player.ovr}</div>
                   <div>
                     <div className="text-xl font-bold">{player.name}</div>
-                    <div className="text-sm text-gray-400">{player.position}</div>
+                    <div className="text-sm text-gray-400">{player.position} · Lvl {player.level}</div>
                     <div className="text-xs text-yellow-500/80 uppercase tracking-widest mt-1">Overall</div>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <div className="flex justify-between text-xs text-gray-400 mb-1">
-                      <span>Energy</span><span>{Math.round(player.energy)}/100</span>
-                    </div>
-                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
-                      <div className={`h-full rounded-full bg-gradient-to-r ${energyColor} transition-all duration-700`} style={{ width: `${player.energy}%` }} />
-                    </div>
+                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Energy</span><span>{Math.round(player.energy)}/100</span></div>
+                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className={`h-full rounded-full bg-gradient-to-r ${energyColor} transition-all duration-700`} style={{ width: `${player.energy}%` }} /></div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-xs text-gray-400 mb-1">
-                      <span>Sharpness</span><span>{Math.round(player.sharpness)}/100</span>
-                    </div>
-                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
-                      <div className={`h-full rounded-full bg-gradient-to-r ${sharpColor} transition-all duration-700`} style={{ width: `${player.sharpness}%` }} />
-                    </div>
+                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Sharpness</span><span>{Math.round(player.sharpness)}/100</span></div>
+                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className={`h-full rounded-full bg-gradient-to-r ${sharpColor} transition-all duration-700`} style={{ width: `${player.sharpness}%` }} /></div>
                   </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-400 mb-1"><span>XP</span><span>{player.xp}/{player.xpToNext}</span></div>
+                    <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-700" style={{ width: `${(player.xp / player.xpToNext) * 100}%` }} /></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400"><span>Form</span><span className="font-bold text-white">{Math.round(player.form)}</span></div>
                 </div>
-                <div className="mt-5 pt-5 border-t border-gray-800 grid grid-cols-2 gap-3 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-green-400">{player.drillsDone}</div>
-                    <div className="text-xs text-gray-500">Drills</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-400">{player.matchesPlayed}</div>
-                    <div className="text-xs text-gray-500">Matches</div>
-                  </div>
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  <button onClick={() => setScreen("training")} className="py-2 rounded-xl bg-green-600/20 hover:bg-green-600/40 text-green-400 text-xs font-bold border border-green-600/30 transition">Train</button>
+                  <button onClick={() => setScreen("match")} className="py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-bold border border-blue-600/30 transition">Match</button>
+                  <button onClick={() => setScreen("mentor")} className="py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 text-xs font-bold border border-purple-600/30 transition">Mentor</button>
                 </div>
               </div>
             </div>
-
-            {/* Stats */}
             <div className="lg:col-span-1 bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
               <h2 className="font-bold mb-4 text-green-400 flex items-center gap-2"><span>⚡</span> Attributes</h2>
               <div className="space-y-3">
-                <StatBar label="Pace" value={a.pace} />
-                <StatBar label="Sprint Speed" value={a.sprintSpeed} />
-                <StatBar label="Acceleration" value={a.acceleration} />
-                <StatBar label="Shooting" value={a.shooting} />
-                <StatBar label="Passing" value={a.passing} />
-                <StatBar label="Dribbling" value={a.dribbling} />
-                <StatBar label="Defending" value={a.defending} />
-                <StatBar label="Physical" value={a.physical} />
-                <StatBar label="Stamina" value={a.stamina} />
-                <StatBar label="Strength" value={a.strength} />
-                <StatBar label="Jumping" value={a.jumping} />
+                <StatBar label="Pace" value={c.pace} />
+                <StatBar label="Shooting" value={c.shooting} />
+                <StatBar label="Passing" value={c.passing} />
+                <StatBar label="Dribbling" value={c.dribbling} />
+                <StatBar label="Defending" value={c.defending} />
+                <StatBar label="Physical" value={c.physical} />
               </div>
+              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-green-400 hover:text-green-300 transition">View all attributes →</button>
             </div>
-
-            {/* Tips + History */}
             <div className="lg:col-span-1 space-y-4">
               <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
                 <h2 className="font-bold mb-3 text-green-400 flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
@@ -299,112 +329,201 @@ export default function Home() {
               </div>
             </div>
           </div>
-        )}
+        );
 
-        {tab === "drills" && (
+      case "player":
+        return (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-green-400">My Player</h2>
+            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-bold text-lg mb-3">Info</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-gray-400">Name</span><span className="font-bold">{player.name}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Position</span><span className="font-bold">{player.position}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Foot</span><span className="font-bold">{player.foot}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Experience</span><span className="font-bold">{player.experience}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Level</span><span className="font-bold">{player.level}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Best OVR</span><span className="font-bold">{player.bestOvr}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Streak</span><span className="font-bold">{player.streak} days</span></div>
+                  </div>
+                  {player.goals.length > 0 && (
+                    <div className="mt-4">
+                      <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Goals</div>
+                      <div className="flex flex-wrap gap-2">
+                        {player.goals.map((g) => <span key={g} className="px-2 py-1 rounded-full bg-green-600/20 text-green-400 text-xs border border-green-600/30">{g}</span>)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg mb-3">Categories</h3>
+                  <div className="space-y-3">
+                    <StatBar label="Pace" value={c.pace} />
+                    <StatBar label="Shooting" value={c.shooting} />
+                    <StatBar label="Passing" value={c.passing} />
+                    <StatBar label="Dribbling" value={c.dribbling} />
+                    <StatBar label="Defending" value={c.defending} />
+                    <StatBar label="Physical" value={c.physical} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <h3 className="font-bold text-lg mb-4">All Attributes</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2">
+                {Object.entries(player.attrs).filter(([, v]) => typeof v === "number").map(([k, v]) => (
+                  <div key={k} className="flex justify-between text-sm py-1 border-b border-gray-800">
+                    <span className="text-gray-400 capitalize">{k.replace(/([A-Z])/g, " $1").trim()}</span>
+                    <span className="font-mono font-bold text-white">{Math.round(v as number)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "training":
+        return (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-green-400">Drills</h2>
-              <p className="text-gray-400 text-sm mt-1">Pick a drill, upload a video, get AI pose-tracked stat gains.</p>
+              <h2 className="text-2xl font-bold text-green-400">Training Ground</h2>
+              <p className="text-gray-400 text-sm mt-1">Choose a drill, record your result, earn XP and attribute gains.</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="flex gap-2 mb-2">
+              <button onClick={() => setEvidenceMode("manual")} className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${evidenceMode === "manual" ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400"}`}>Manual Entry</button>
+              <button onClick={() => setEvidenceMode("camera")} className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${evidenceMode === "camera" ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400"}`}>Camera Analysis</button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {DRILLS.map((d) => (
                 <button
                   key={d.id}
                   onClick={() => { setSelectedDrill(d.id); setVideoFile(null); setVideoUrl(null); setLastResult(null); }}
-                  className={`p-5 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-green-500 bg-green-900/30 shadow-lg shadow-green-500/10 scale-[1.02]" : "border-gray-800 bg-gray-900/60 hover:bg-gray-800/60 hover:border-gray-700"}`}
+                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-green-500 bg-green-900/30 shadow-lg shadow-green-500/10 scale-[1.02]" : "border-gray-800 bg-gray-900/60 hover:bg-gray-800/60 hover:border-gray-700"}`}
                 >
-                  <div className="text-4xl mb-2">{d.emoji}</div>
-                  <div className="font-bold">{d.name}</div>
-                  <div className="text-xs text-gray-400 mt-1 leading-relaxed">{d.desc}</div>
-                  <div className="text-xs text-gray-500 mt-3 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" /> {d.cost} energy
-                  </div>
+                  <div className="text-3xl mb-1">{d.emoji}</div>
+                  <div className="font-bold text-sm">{d.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">{d.category}</div>
                 </button>
               ))}
             </div>
-
             {selectedDrill && (
               <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="text-3xl">{DRILLS.find((d) => d.id === selectedDrill)?.emoji}</div>
-                  <div>
-                    <h3 className="font-bold text-lg">{DRILLS.find((d) => d.id === selectedDrill)?.name}</h3>
-                    <p className="text-sm text-gray-400">Upload a short video of you performing this drill.</p>
-                  </div>
-                </div>
-                <label className="block">
-                  <div className="border-2 border-dashed border-gray-700 hover:border-green-500 rounded-2xl p-6 text-center cursor-pointer transition">
-                    <div className="text-3xl mb-2">📹</div>
-                    <div className="text-sm text-gray-300">Click to select a video file</div>
-                    <div className="text-xs text-gray-500 mt-1">MP4, MOV, WebM supported</div>
-                  </div>
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])}
-                    className="hidden"
-                  />
-                </label>
-                {videoUrl && (
-                  <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-gray-800" />
-                )}
-                <button
-                  onClick={runAnalysis}
-                  disabled={!videoFile || analyzing || player.energy < 5}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold shadow-lg shadow-green-600/20 transition transform hover:scale-[1.01] active:scale-[0.99]"
-                >
-                  {analyzing ? `Analyzing... ${Math.round(progress)}%` : "Analyze & Apply Gains"}
-                </button>
-                {analyzing && (
-                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} />
-                  </div>
-                )}
-                {lastResult && <p className="text-sm text-gray-200 bg-gray-800/60 p-4 rounded-2xl border border-gray-700">{lastResult}</p>}
-                <p className="text-xs text-gray-500">Energy: {Math.round(player.energy)}/100. Low energy reduces gains.</p>
+                {(() => {
+                  const d = DRILLS.find((x) => x.id === selectedDrill)!;
+                  return (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <div className="text-4xl">{d.emoji}</div>
+                        <div>
+                          <h3 className="font-bold text-lg">{d.name}</h3>
+                          <p className="text-sm text-gray-400">{d.desc}</p>
+                          <div className="text-xs text-gray-500 mt-1">Energy cost {d.cost} · +{d.xp} XP base · Primary: {Object.keys(d.weights).join(", ")}</div>
+                        </div>
+                      </div>
+                      {evidenceMode === "manual" && (
+                        <div className="space-y-3">
+                          <label className="block">
+                            <span className="text-sm text-gray-300">Reps completed: {manualReps}</span>
+                            <input type="range" min={1} max={40} value={manualReps} onChange={(e) => setManualReps(Number(e.target.value))} className="w-full accent-green-500" />
+                          </label>
+                          <button onClick={runManual} disabled={player.energy < 5} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 font-bold shadow-lg shadow-green-600/20 transition">Log Session</button>
+                        </div>
+                      )}
+                      {evidenceMode === "camera" && (
+                        <>
+                          <label className="block">
+                            <div className="border-2 border-dashed border-gray-700 hover:border-green-500 rounded-2xl p-6 text-center cursor-pointer transition">
+                              <div className="text-3xl mb-2">📹</div>
+                              <div className="text-sm text-gray-300">Click to select a video file</div>
+                              <div className="text-xs text-gray-500 mt-1">MP4, MOV, WebM supported</div>
+                            </div>
+                            <input ref={fileRef} type="file" accept="video/*" onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])} className="hidden" />
+                          </label>
+                          {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-gray-800" />}
+                          <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 disabled:opacity-40 font-bold shadow-lg shadow-green-600/20 transition">
+                            {analyzing ? `Analyzing... ${Math.round(progress)}%` : "Analyze & Apply Gains"}
+                          </button>
+                          {analyzing && <div className="h-2 bg-gray-800 rounded-full overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
+                        </>
+                      )}
+                      {lastResult && <p className="text-sm text-gray-200 bg-gray-800/60 p-4 rounded-2xl border border-gray-700">{lastResult}</p>}
+                      <p className="text-xs text-gray-500">Energy: {Math.round(player.energy)}/100. Low energy reduces gains.</p>
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
-        )}
+        );
 
-        {tab === "match" && (
-          <div className="max-w-lg">
+      case "match":
+        return (
+          <div className="max-w-2xl">
             <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
-              <h2 className="text-2xl font-bold text-green-400 mb-1">Log a Match</h2>
-              <p className="text-gray-400 text-sm mb-6">Enter your match stats to boost sharpness & OVR.</p>
-              <div className="space-y-5">
+              <h2 className="text-2xl font-bold text-green-400 mb-1">Match Centre</h2>
+              <p className="text-gray-400 text-sm mb-6">Record a match to boost sharpness, form and XP.</p>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <label className="block"><span className="text-xs text-gray-400">Opponent</span><input value={mOpponent} onChange={(e) => setMOpponent(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" placeholder="Team name" /></label>
+                <label className="block"><span className="text-xs text-gray-400">Competition</span><input value={mCompetition} onChange={(e) => setMCompetition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
+                <label className="block"><span className="text-xs text-gray-400">Position</span><input value={mPosition} onChange={(e) => setMPosition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
+                <label className="block"><span className="text-xs text-gray-400">Minutes</span><input type="number" value={mMinutes} onChange={(e) => setMMinutes(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
+                <label className="block"><span className="text-xs text-gray-400">Result</span>
+                  <select value={mResult} onChange={(e) => setMResult(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none">
+                    <option>W</option><option>D</option><option>L</option>
+                  </select>
+                </label>
+                <label className="block"><span className="text-xs text-gray-400">Rating (1-10)</span><input type="number" min={1} max={10} value={mRating} onChange={(e) => setMRating(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" /></label>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
-                  { label: "Goals", val: mGoals, set: setMGoals, max: 10, icon: "⚽" },
-                  { label: "Assists", val: mAssists, set: setMAssists, max: 10, icon: "🎯" },
-                  { label: "Distance (km)", val: mDistance, set: setMDistance, max: 15, icon: "🏃" },
-                  { label: "Sprints", val: mSprints, set: setMSprints, max: 60, icon: "⚡" },
-                  { label: "Match Rating", val: mRating, set: setMRating, max: 10, icon: "⭐" },
+                  { label: "Goals", val: mGoals, set: setMGoals },
+                  { label: "Assists", val: mAssists, set: setMAssists },
+                  { label: "Shots", val: mShots, set: setMShots },
+                  { label: "Chances created", val: mChances, set: setMChances },
+                  { label: "Passes completed", val: mPassC, set: setMPassC },
+                  { label: "Passes attempted", val: mPassA, set: setMPassA },
+                  { label: "Interceptions", val: mInt, set: setMInt },
+                  { label: "Tackles", val: mTackles, set: setMTackles },
+                  { label: "Distance (km)", val: mDistance, set: setMDistance },
+                  { label: "Sprints", val: mSprints, set: setMSprints },
                 ].map((f) => (
-                  <div key={f.label}>
-                    <div className="flex justify-between text-sm mb-1.5">
-                      <span className="text-gray-300 flex items-center gap-2"><span>{f.icon}</span>{f.label}</span>
-                      <span className="font-mono font-bold text-white">{f.val}</span>
-                    </div>
-                    <input type="range" min={0} max={f.max} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full accent-green-500" />
-                  </div>
+                  <label key={f.label} className="block">
+                    <span className="text-xs text-gray-400">{f.label}</span>
+                    <input type="number" min={0} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 outline-none" />
+                  </label>
                 ))}
               </div>
-              <button onClick={logMatch} className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 font-bold shadow-lg shadow-green-600/20 transition transform hover:scale-[1.01] active:scale-[0.99]">
-                Log Match
-              </button>
+              <button onClick={logMatch} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 font-bold shadow-lg shadow-green-600/20 transition">Log Match</button>
             </div>
+            {player.matches.length > 0 && (
+              <div className="mt-6 bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+                <h3 className="font-bold text-lg mb-4">Match History</h3>
+                <div className="space-y-2">
+                  {player.matches.slice(0, 10).map((m) => (
+                    <div key={m.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold">vs {m.opponent}</span>
+                        <span className="text-gray-400">{new Date(m.date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="text-gray-300 mt-1">{m.result} · {m.goals}G {m.assists}A · Rating {m.rating} · {m.minutes}min</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        );
 
-        {tab === "mentor" && (
+      case "mentor":
+        return (
           <div className="bg-gray-900/60 backdrop-blur rounded-3xl border border-gray-800 flex flex-col h-[70vh] overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl">🧠</div>
               <div>
                 <div className="font-bold">AI Mentor</div>
-                <div className="text-xs text-gray-400">Your pro football coach</div>
+                <div className="text-xs text-gray-400">Your pro football coach (rule-based demo mode)</div>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-3">
@@ -417,18 +536,130 @@ export default function Home() {
               ))}
             </div>
             <div className="p-4 border-t border-gray-800 flex gap-2">
-              <input
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendChat()}
-                placeholder="Ask about sprint, jump, energy, sharpness, match, camera..."
-                className="flex-1 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition"
-              />
+              <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 outline-none transition" />
               <button onClick={sendChat} className="px-5 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
             </div>
           </div>
-        )}
+        );
+
+      case "history":
+        return (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-green-400">Career History</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+                <h3 className="font-bold text-lg mb-3">OVR & Level</h3>
+                <div className="text-5xl font-black text-yellow-400">{player.ovr}</div>
+                <div className="text-sm text-gray-400 mt-1">Best: {player.bestOvr} · Level {player.level} · {player.xp} XP</div>
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex justify-between"><span className="text-gray-400">Sessions</span><span className="font-bold">{player.drillsDone}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Matches</span><span className="font-bold">{player.matchesPlayed}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Streak</span><span className="font-bold">{player.streak} days</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Form</span><span className="font-bold">{Math.round(player.form)}</span></div>
+                </div>
+              </div>
+              <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+                <h3 className="font-bold text-lg mb-3">Achievements ({player.achievements.length})</h3>
+                {player.achievements.length === 0 && <p className="text-sm text-gray-500">No achievements yet. Keep training!</p>}
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {player.achievements.map((a) => (
+                    <div key={a.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                      <div className="font-bold text-sm text-yellow-400">{a.name}</div>
+                      <div className="text-xs text-gray-400">{a.desc}</div>
+                      <div className="text-xs text-gray-600 mt-1">{new Date(a.date).toLocaleDateString()}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800">
+              <h3 className="font-bold text-lg mb-3">Training Sessions ({player.sessions.length})</h3>
+              {player.sessions.length === 0 && <p className="text-sm text-gray-500">No sessions yet.</p>}
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {player.sessions.map((s: Session) => (
+                  <div key={s.id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 text-sm">
+                    <div className="flex justify-between">
+                      <span className="font-bold">{s.drill}</span>
+                      <span className="text-gray-400 text-xs">{new Date(s.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="text-gray-300 mt-1">{s.reps} reps · {s.evidence} · +{s.xp} XP</div>
+                    {s.changes.length > 0 && <div className="text-xs text-green-400 mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "settings":
+        return (
+          <div className="max-w-lg space-y-4">
+            <h2 className="text-2xl font-bold text-green-400">Settings</h2>
+            <div className="bg-gray-900/60 backdrop-blur rounded-3xl p-6 border border-gray-800 space-y-4">
+              <div className="text-sm text-gray-300">
+                <p className="mb-2"><span className="font-bold">Persistence:</span> localStorage (single device). For multi-device, configure Supabase.</p>
+                <p className="mb-2"><span className="font-bold">AI Mentor:</span> Rule-based demo mode (no API key). Set OPENAI_API_KEY on server for live AI.</p>
+                <p className="mb-2"><span className="font-bold">Camera:</span> MediaPipe pose runs in-browser. No footage uploaded.</p>
+              </div>
+              <button onClick={() => { if (confirm("Delete all player data?")) reset(); }} className="w-full py-3 rounded-xl bg-red-900/50 hover:bg-red-800/60 text-red-300 font-bold border border-red-900/50 transition">Delete Player Data</button>
+              <button onClick={() => { localStorage.removeItem("irlfc_player"); location.reload(); }} className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold border border-gray-700 transition">Clear & Reload</button>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#0a0f1a] text-white flex">
+      {/* Sidebar (desktop) */}
+      <aside className="hidden md:flex flex-col w-60 bg-gray-900/80 border-r border-gray-800 p-4 sticky top-0 h-screen">
+        <div className="flex items-center gap-2 mb-6 px-2">
+          <div className="text-2xl">⚽</div>
+          <div className="font-black text-lg tracking-tight">IRL FC</div>
+        </div>
+        <div className="bg-gray-800/60 rounded-2xl p-3 mb-4 border border-gray-700/50">
+          <div className="text-sm font-bold truncate">{player.name}</div>
+          <div className="text-xs text-gray-400">{player.position} · {player.ovr} OVR</div>
+        </div>
+        <nav className="flex-1 space-y-1">
+          {NAV.map((n) => (
+            <button key={n.id} onClick={() => setScreen(n.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${screen === n.id ? "bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg shadow-green-600/20" : "text-gray-400 hover:bg-gray-800/60 hover:text-white"}`}>
+              <span>{n.icon}</span>{n.label}
+            </button>
+          ))}
+        </nav>
+        <button onClick={restDay} className="mt-2 w-full py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition">Rest Day</button>
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-gray-900/90 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="text-xl">⚽</div>
+          <div className="font-black">IRL FC</div>
+        </div>
+        <div className="text-xs text-gray-400">{player.name} · {player.ovr}</div>
       </div>
+
+      {/* Main content */}
+      <div className="flex-1 min-w-0">
+        <div className="md:hidden h-14" />
+        <div className="p-4 md:p-6 max-w-6xl mx-auto pb-24 md:pb-6">
+          {renderScreen()}
+        </div>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-gray-900/95 backdrop-blur border-t border-gray-800 flex justify-around py-2">
+        {NAV.slice(0, 5).map((n) => (
+          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-green-400" : "text-gray-500"}`}>
+            <span className="text-lg">{n.icon}</span>
+            <span className="truncate max-w-[60px]">{n.label.split(" ")[0]}</span>
+          </button>
+        ))}
+      </nav>
     </main>
   );
 }

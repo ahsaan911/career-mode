@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Career Mode - Real Life Football Simulator",
-  description: "Train in real life, level up your FIFA-style career.",
+  title: "IRL FC - Real-Life Football Career Mode",
+  description: "Train in real life, level up your football career.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
