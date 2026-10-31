@@ -36,6 +36,15 @@ function StatBar({ label, value }: { label: string; value: number }) {
   );
 }
 
+function BackButton({ onClick, label = "Back" }: { onClick: () => void; label?: string }) {
+  return (
+    <button onClick={onClick} className="flex items-center gap-2 text-[#808080] hover:text-white transition-colors mb-6 group">
+      <span className="text-lg group-hover:-translate-x-1 transition-transform">{"<"}</span>
+      <span className="text-sm font-bold uppercase tracking-wider">{label}</span>
+    </button>
+  );
+}
+
 export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [screen, setScreen] = useState("dash");
@@ -206,14 +215,14 @@ export default function Home() {
           <div className="bg-[#131D2B] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#263244] space-y-6">
             <div>
               <label className="block mb-2"><span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Player Name</span>
-                <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] focus:ring-2 focus:ring-[#C8FF45]/30 outline-none transition text-lg" placeholder="Your name" />
+                <input value={oName} onChange={(e) => setOName(e.target.value)} className="w-full mt-2 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] focus:ring-2 focus:ring-[#FF1E3C]/30 outline-none transition text-lg" placeholder="Your name" />
               </label>
             </div>
             <div>
               <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Position</span>
               <div className="grid grid-cols-5 gap-2 mt-2">
                 {POSITIONS.map((p) => (
-                  <button key={p} onClick={() => setOPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${oPos === p ? "bg-[#C8FF45] text-[#080D16] shadow-lg shadow-[#C8FF45]/20" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{p}</button>
+                  <button key={p} onClick={() => setOPos(p)} className={`py-2 rounded-lg text-sm font-bold transition ${oPos === p ? "bg-[#FF1E3C] text-[#080D16] shadow-lg shadow-[#FF1E3C]/20" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{p}</button>
                 ))}
               </div>
             </div>
@@ -222,7 +231,7 @@ export default function Home() {
                 <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Preferred Foot</span>
                 <div className="flex gap-2 mt-2">
                   {FEET.map((f) => (
-                    <button key={f} onClick={() => setOFoot(f)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${oFoot === f ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{f}</button>
+                    <button key={f} onClick={() => setOFoot(f)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${oFoot === f ? "bg-[#FF1E3C] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{f}</button>
                   ))}
                 </div>
               </div>
@@ -230,7 +239,7 @@ export default function Home() {
                 <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Experience</span>
                 <div className="flex gap-2 mt-2">
                   {EXPERIENCE.map((e) => (
-                    <button key={e} onClick={() => setOExp(e)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${oExp === e ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{e}</button>
+                    <button key={e} onClick={() => setOExp(e)} className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${oExp === e ? "bg-[#FF1E3C] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{e}</button>
                   ))}
                 </div>
               </div>
@@ -239,11 +248,11 @@ export default function Home() {
               <span className="text-xs uppercase tracking-widest text-[#929FB2] font-semibold">Development Goals (pick any)</span>
               <div className="flex flex-wrap gap-2 mt-2">
                 {GOALS.map((g) => (
-                  <button key={g} onClick={() => setOGoals((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g])} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${oGoals.includes(g) ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{g}</button>
+                  <button key={g} onClick={() => setOGoals((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g])} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${oGoals.includes(g) ? "bg-[#FF1E3C] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2] hover:bg-gray-700"}`}>{g}</button>
                 ))}
               </div>
             </div>
-            <button onClick={startCareer} disabled={!oName.trim()} className="w-full py-4 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-[#C8FF45]/20 transition transform hover:scale-[1.02] active:scale-[0.98]">
+            <button onClick={startCareer} disabled={!oName.trim()} className="w-full py-4 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-lg shadow-[#FF1E3C]/20 transition transform hover:scale-[1.02] active:scale-[0.98]">
               Start Career
             </button>
             <p className="text-xs text-[#929FB2] text-center">Starting OVR ~50. Values are game estimates, not scientific measurements.</p>
@@ -264,7 +273,7 @@ export default function Home() {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-1">
-              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#C8FF45]/10 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
+              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#FF1E3C]/10 via-gray-900 to-gray-900 border border-yellow-500/30 shadow-2xl p-6">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
                 <div className="relative flex items-center gap-4 mb-5">
                   <div className="text-7xl font-black bg-gradient-to-b from-yellow-300 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg">{player.ovr}</div>
@@ -290,14 +299,14 @@ export default function Home() {
                   <div className="flex justify-between text-xs text-[#929FB2]"><span>Form</span><span className="font-bold text-white">{Math.round(player.form)}</span></div>
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-2">
-                  <button onClick={() => setScreen("training")} className="py-2 rounded-lg bg-[#C8FF45]/20 hover:bg-[#C8FF45]/40 text-[#C8FF45] text-xs font-bold border border-[#C8FF45]/30 transition">Train</button>
+                  <button onClick={() => setScreen("training")} className="py-2 rounded-lg bg-[#FF1E3C]/20 hover:bg-[#FF1E3C]/40 text-[#FF1E3C] text-xs font-bold border border-[#FF1E3C]/30 transition">Train</button>
                   <button onClick={() => setScreen("match")} className="py-2 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-bold border border-blue-600/30 transition">Match</button>
                   <button onClick={() => setScreen("mentor")} className="py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 text-xs font-bold border border-purple-600/30 transition">Mentor</button>
                 </div>
               </div>
             </div>
             <div className="lg:col-span-1 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-              <h2 className="font-bold mb-4 text-[#C8FF45] flex items-center gap-2"><span>⚡</span> Attributes</h2>
+              <h2 className="font-bold mb-4 text-[#FF1E3C] flex items-center gap-2"><span>⚡</span> Attributes</h2>
               <div className="space-y-3">
                 <StatBar label="Pace" value={c.pace} />
                 <StatBar label="Shooting" value={c.shooting} />
@@ -306,17 +315,17 @@ export default function Home() {
                 <StatBar label="Defending" value={c.defending} />
                 <StatBar label="Physical" value={c.physical} />
               </div>
-              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-[#C8FF45] hover:text-[#C8FF45] transition">View all attributes →</button>
+              <button onClick={() => setScreen("player")} className="mt-4 w-full py-2 text-sm text-[#FF1E3C] hover:text-[#FF1E3C] transition">View all attributes →</button>
             </div>
             <div className="lg:col-span-1 space-y-4">
               <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-                <h2 className="font-bold mb-3 text-[#C8FF45] flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
+                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>🧠</span> Mentor Tips</h2>
                 <ul className="space-y-2">
                   {tips.map((t, i) => <li key={i} className="text-sm text-[#F4F6FA] bg-[#131D2B] rounded-lg px-3 py-2 border border-[#263244]">{t}</li>)}
                 </ul>
               </div>
               <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-                <h2 className="font-bold mb-3 text-[#C8FF45] flex items-center gap-2"><span>📋</span> Recent Activity</h2>
+                <h2 className="font-bold mb-3 text-[#FF1E3C] flex items-center gap-2"><span>📋</span> Recent Activity</h2>
                 {player.history.length === 0 && <p className="text-sm text-[#929FB2]">No activity yet. Start training!</p>}
                 <ul className="space-y-1.5">
                   {player.history.slice(0, 6).map((h, i) => (
@@ -334,7 +343,7 @@ export default function Home() {
       case "player":
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-[#C8FF45]">My Player</h2>
+            <h2 className="text-2xl font-bold text-[#FF1E3C]">My Player</h2>
             <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -352,7 +361,7 @@ export default function Home() {
                     <div className="mt-4">
                       <div className="text-xs uppercase tracking-widest text-[#929FB2] mb-2">Goals</div>
                       <div className="flex flex-wrap gap-2">
-                        {player.goals.map((g) => <span key={g} className="px-2 py-1 rounded-full bg-[#C8FF45]/20 text-[#C8FF45] text-xs border border-[#C8FF45]/30">{g}</span>)}
+                        {player.goals.map((g) => <span key={g} className="px-2 py-1 rounded-full bg-[#FF1E3C]/20 text-[#FF1E3C] text-xs border border-[#FF1E3C]/30">{g}</span>)}
                       </div>
                     </div>
                   )}
@@ -388,19 +397,19 @@ export default function Home() {
         return (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-[#C8FF45]">Training Ground</h2>
+              <h2 className="text-2xl font-bold text-[#FF1E3C]">Training Ground</h2>
               <p className="text-[#929FB2] text-sm mt-1">Choose a drill, record your result, earn XP and attribute gains.</p>
             </div>
             <div className="flex gap-2 mb-2">
-              <button onClick={() => setEvidenceMode("manual")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "manual" ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Manual Entry</button>
-              <button onClick={() => setEvidenceMode("camera")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "camera" ? "bg-[#C8FF45] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Camera Analysis</button>
+              <button onClick={() => setEvidenceMode("manual")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "manual" ? "bg-[#FF1E3C] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Manual Entry</button>
+              <button onClick={() => setEvidenceMode("camera")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${evidenceMode === "camera" ? "bg-[#FF1E3C] text-[#080D16]" : "bg-[#0D1420] text-[#929FB2]"}`}>Camera Analysis</button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {DRILLS.map((d) => (
                 <button
                   key={d.id}
                   onClick={() => { setSelectedDrill(d.id); setVideoFile(null); setVideoUrl(null); setLastResult(null); }}
-                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-[#C8FF45] bg-[#C8FF45]/10 shadow-lg shadow-[#C8FF45]/10 scale-[1.02]" : "border-[#263244] bg-[#131D2B] hover:bg-[#131D2B] hover:border-[#263244]"}`}
+                  className={`p-4 rounded-2xl border text-left transition-all ${selectedDrill === d.id ? "border-[#FF1E3C] bg-[#FF1E3C]/10 shadow-lg shadow-[#FF1E3C]/10 scale-[1.02]" : "border-[#263244] bg-[#131D2B] hover:bg-[#131D2B] hover:border-[#263244]"}`}
                 >
                   <div className="text-3xl mb-1">{d.emoji}</div>
                   <div className="font-bold text-sm">{d.name}</div>
@@ -426,15 +435,15 @@ export default function Home() {
                         <div className="space-y-3">
                           <label className="block">
                             <span className="text-sm text-[#F4F6FA]">Reps completed: {manualReps}</span>
-                            <input type="range" min={1} max={40} value={manualReps} onChange={(e) => setManualReps(Number(e.target.value))} className="w-full accent-[#C8FF45]" />
+                            <input type="range" min={1} max={40} value={manualReps} onChange={(e) => setManualReps(Number(e.target.value))} className="w-full accent-[#FF1E3C]" />
                           </label>
-                          <button onClick={runManual} disabled={player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 font-bold shadow-lg shadow-[#C8FF45]/20 transition">Log Session</button>
+                          <button onClick={runManual} disabled={player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] disabled:opacity-40 font-bold shadow-lg shadow-[#FF1E3C]/20 transition">Log Session</button>
                         </div>
                       )}
                       {evidenceMode === "camera" && (
                         <>
                           <label className="block">
-                            <div className="border-2 border-dashed border-[#263244] hover:border-[#C8FF45] rounded-2xl p-6 text-center cursor-pointer transition">
+                            <div className="border-2 border-dashed border-[#263244] hover:border-[#FF1E3C] rounded-2xl p-6 text-center cursor-pointer transition">
                               <div className="text-3xl mb-2">📹</div>
                               <div className="text-sm text-[#F4F6FA]">Click to select a video file</div>
                               <div className="text-xs text-[#929FB2] mt-1">MP4, MOV, WebM supported</div>
@@ -442,7 +451,7 @@ export default function Home() {
                             <input ref={fileRef} type="file" accept="video/*" onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])} className="hidden" />
                           </label>
                           {videoUrl && <video src={videoUrl} controls className="w-full max-h-72 rounded-2xl bg-black border border-[#263244]" />}
-                          <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] disabled:opacity-40 font-bold shadow-lg shadow-[#C8FF45]/20 transition">
+                          <button onClick={runAnalysis} disabled={!videoFile || analyzing || player.energy < 5} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] disabled:opacity-40 font-bold shadow-lg shadow-[#FF1E3C]/20 transition">
                             {analyzing ? `Analyzing... ${Math.round(progress)}%` : "Analyze & Apply Gains"}
                           </button>
                           {analyzing && <div className="h-2 bg-[#0D1420] rounded-full overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300" style={{ width: `${progress}%` }} /></div>}
@@ -462,19 +471,19 @@ export default function Home() {
         return (
           <div className="max-w-2xl">
             <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
-              <h2 className="text-2xl font-bold text-[#C8FF45] mb-1">Match Centre</h2>
+              <h2 className="text-2xl font-bold text-[#FF1E3C] mb-1">Match Centre</h2>
               <p className="text-[#929FB2] text-sm mb-6">Record a match to boost sharpness, form and XP.</p>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <label className="block"><span className="text-xs text-[#929FB2]">Opponent</span><input value={mOpponent} onChange={(e) => setMOpponent(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" placeholder="Team name" /></label>
-                <label className="block"><span className="text-xs text-[#929FB2]">Competition</span><input value={mCompetition} onChange={(e) => setMCompetition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
-                <label className="block"><span className="text-xs text-[#929FB2]">Position</span><input value={mPosition} onChange={(e) => setMPosition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
-                <label className="block"><span className="text-xs text-[#929FB2]">Minutes</span><input type="number" value={mMinutes} onChange={(e) => setMMinutes(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Opponent</span><input value={mOpponent} onChange={(e) => setMOpponent(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" placeholder="Team name" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Competition</span><input value={mCompetition} onChange={(e) => setMCompetition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Position</span><input value={mPosition} onChange={(e) => setMPosition(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Minutes</span><input type="number" value={mMinutes} onChange={(e) => setMMinutes(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" /></label>
                 <label className="block"><span className="text-xs text-[#929FB2]">Result</span>
-                  <select value={mResult} onChange={(e) => setMResult(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none">
+                  <select value={mResult} onChange={(e) => setMResult(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none">
                     <option>W</option><option>D</option><option>L</option>
                   </select>
                 </label>
-                <label className="block"><span className="text-xs text-[#929FB2]">Rating (1-10)</span><input type="number" min={1} max={10} value={mRating} onChange={(e) => setMRating(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" /></label>
+                <label className="block"><span className="text-xs text-[#929FB2]">Rating (1-10)</span><input type="number" min={1} max={10} value={mRating} onChange={(e) => setMRating(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" /></label>
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
@@ -491,11 +500,11 @@ export default function Home() {
                 ].map((f) => (
                   <label key={f.label} className="block">
                     <span className="text-xs text-[#929FB2]">{f.label}</span>
-                    <input type="number" min={0} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] outline-none" />
+                    <input type="number" min={0} value={f.val} onChange={(e) => f.set(Number(e.target.value))} className="w-full mt-1 px-3 py-2 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] outline-none" />
                   </label>
                 ))}
               </div>
-              <button onClick={logMatch} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] font-bold shadow-lg shadow-[#C8FF45]/20 transition">Log Match</button>
+              <button onClick={logMatch} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] font-bold shadow-lg shadow-[#FF1E3C]/20 transition">Log Match</button>
             </div>
             {player.matches.length > 0 && (
               <div className="mt-6 bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
@@ -529,15 +538,15 @@ export default function Home() {
             <div className="flex-1 overflow-y-auto p-6 space-y-3">
               {chatLog.map((c, i) => (
                 <div key={i} className={`flex ${c.who === "you" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${c.who === "you" ? "bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] text-white rounded-br-md" : "bg-[#0D1420] text-gray-100 rounded-bl-md border border-[#263244]"}`}>
+                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${c.who === "you" ? "bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] text-white rounded-br-md" : "bg-[#0D1420] text-gray-100 rounded-bl-md border border-[#263244]"}`}>
                     {c.text}
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-4 border-t border-[#263244] flex gap-2">
-              <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#C8FF45] focus:ring-2 focus:ring-[#C8FF45]/30 outline-none transition" />
-              <button onClick={sendChat} className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] hover:from-[#9BC435] hover:to-[#C8FF45] font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
+              <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendChat()} placeholder="Ask about sprint, jump, energy, sharpness, match, camera, weak..." className="flex-1 px-4 py-3 rounded-lg bg-[#0D1420] border border-[#263244] focus:border-[#FF1E3C] focus:ring-2 focus:ring-[#FF1E3C]/30 outline-none transition" />
+              <button onClick={sendChat} className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] hover:from-[#E01834] hover:to-[#FF1E3C] font-semibold transition transform hover:scale-105 active:scale-95">➤</button>
             </div>
           </div>
         );
@@ -545,7 +554,7 @@ export default function Home() {
       case "history":
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-[#C8FF45]">Career History</h2>
+            <h2 className="text-2xl font-bold text-[#FF1E3C]">Career History</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244]">
                 <h3 className="font-bold text-lg mb-3">OVR & Level</h3>
@@ -583,7 +592,7 @@ export default function Home() {
                       <span className="text-[#929FB2] text-xs">{new Date(s.date).toLocaleDateString()}</span>
                     </div>
                     <div className="text-[#F4F6FA] mt-1">{s.reps} reps · {s.evidence} · +{s.xp} XP</div>
-                    {s.changes.length > 0 && <div className="text-xs text-[#C8FF45] mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
+                    {s.changes.length > 0 && <div className="text-xs text-[#FF1E3C] mt-1">{s.changes.map((ch) => ch.attr + " " + ch.before + "→" + ch.after).join(", ")}</div>}
                   </div>
                 ))}
               </div>
@@ -594,7 +603,7 @@ export default function Home() {
       case "settings":
         return (
           <div className="max-w-lg space-y-4">
-            <h2 className="text-2xl font-bold text-[#C8FF45]">Settings</h2>
+            <h2 className="text-2xl font-bold text-[#FF1E3C]">Settings</h2>
             <div className="bg-[#131D2B] backdrop-blur rounded-2xl p-6 border border-[#263244] space-y-4">
               <div className="text-sm text-[#F4F6FA]">
                 <p className="mb-2"><span className="font-bold">Persistence:</span> localStorage (single device). For multi-device, configure Supabase.</p>
@@ -626,7 +635,7 @@ export default function Home() {
         </div>
         <nav className="flex-1 space-y-1">
           {NAV.map((n) => (
-            <button key={n.id} onClick={() => setScreen(n.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition ${screen === n.id ? "bg-gradient-to-r from-[#C8FF45] to-[#9BC435] text-[#080D16] text-white shadow-lg shadow-[#C8FF45]/20" : "text-[#929FB2] hover:bg-[#131D2B] hover:text-white"}`}>
+            <button key={n.id} onClick={() => setScreen(n.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition ${screen === n.id ? "bg-gradient-to-r from-[#FF1E3C] to-[#E01834] text-[#080D16] text-white shadow-lg shadow-[#FF1E3C]/20" : "text-[#929FB2] hover:bg-[#131D2B] hover:text-white"}`}>
               <span>{n.icon}</span>{n.label}
             </button>
           ))}
@@ -654,7 +663,7 @@ export default function Home() {
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0D1420]/95 backdrop-blur border-t border-[#263244] flex justify-around py-2">
         {NAV.slice(0, 5).map((n) => (
-          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-[#C8FF45]" : "text-[#929FB2]"}`}>
+          <button key={n.id} onClick={() => setScreen(n.id)} className={`flex flex-col items-center px-2 py-1 text-xs ${screen === n.id ? "text-[#FF1E3C]" : "text-[#929FB2]"}`}>
             <span className="text-lg">{n.icon}</span>
             <span className="truncate max-w-[60px]">{n.label.split(" ")[0]}</span>
           </button>
