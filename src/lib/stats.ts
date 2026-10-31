@@ -1,4 +1,4 @@
-// Stat progression engine for Career Mode
+﻿// Stat progression engine for Career Mode
 
 export type Attrs = {
   pace: number; // 1-99
@@ -173,8 +173,8 @@ export function applyMatch(p: Player, stats: { goals: number; assists: number; d
 export function mentorTips(p: Player): string[] {
   const tips: string[] = [];
   const a = p.attrs;
-  if (p.energy < 30) tips.push("⚠️ Energy low (" + Math.round(p.energy) + "). Rest or gains will be minimal. Consider a rest day.");
-  if (p.sharpness < 40) tips.push("📉 Sharpness low. Play a match or do a drill to regain form, or stats may decay.");
+  if (p.energy < 30) tips.push("Energy low (" + Math.round(p.energy) + "). Rest or gains will be minimal. Consider a rest day.");
+  if (p.sharpness < 40) tips.push("Sharpness low. Play a match or do a drill to regain form, or stats may decay.");
   // find weakest
   const entries: [string, number][] = [
     ["Acceleration", a.acceleration],
@@ -186,10 +186,10 @@ export function mentorTips(p: Player): string[] {
     ["Dribbling", a.dribbling],
   ];
   entries.sort((x, y) => x[1] - y[1]);
-  tips.push(`🎯 Weakest attribute: ${entries[0][0]} (${entries[0][1]}). Focus drills there.`);
-  if (a.acceleration < a.sprintSpeed + 3) tips.push("💡 Tip: Sprint drills boost acceleration the most — do 5x max-effort sprints.");
-  if (p.drillsDone < 3) tips.push("📹 Use the camera on the Drills tab to track sprints/jumps and earn stat gains.");
-  if (p.matchesPlayed === 0) tips.push("⚽ Log a match in Match Log to boost sharpness and OVR.");
+  tips.push(`Weakest attribute: ${entries[0][0]} (${entries[0][1]}). Focus drills there.`);
+  if (a.acceleration < a.sprintSpeed + 3) tips.push("Tip: Sprint drills boost acceleration the most — do 5x max-effort sprints.");
+  if (p.drillsDone < 3) tips.push("Use the camera on the Drills tab to track sprints/jumps and earn stat gains.");
+  if (p.matchesPlayed === 0) tips.push("Log a match in Match Log to boost sharpness and OVR.");
   return tips;
 }
 

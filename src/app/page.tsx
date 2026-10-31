@@ -1,14 +1,14 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { createPlayer, applyDecay, applyDrill, applyMatch, mentorTips, mentorChat, recalcOvr, type Player, type DrillResult } from "@/lib/stats";
 import { analyzeVideo } from "@/lib/pose";
 
 const DRILLS = [
-  { id: "sprint", name: "Max Sprint", emoji: "🏃", desc: "5 max-effort sprints. Boosts acceleration most.", cost: 20 },
-  { id: "jump", name: "Vertical Jump", emoji: "🦘", desc: "Jump as high as you can. Boosts jumping.", cost: 20 },
-  { id: "shuttle", name: "Shuttle Run", emoji: "↔️", desc: "Back-and-forth sprints. Boosts pace + stamina.", cost: 20 },
-  { id: "plank", name: "Plank Hold", emoji: "🧘", desc: "Hold plank. Boosts strength + stamina.", cost: 15 },
+  { id: "sprint", name: "Max Sprint", emoji: "\u{1F3C3}", desc: "5 max-effort sprints. Boosts acceleration most.", cost: 20 },
+  { id: "jump", name: "Vertical Jump", emoji: "\u{1F998}", desc: "Jump as high as you can. Boosts jumping.", cost: 20 },
+  { id: "shuttle", name: "Shuttle Run", emoji: "\u2194\uFE0F", desc: "Back-and-forth sprints. Boosts pace + stamina.", cost: 20 },
+  { id: "plank", name: "Plank Hold", emoji: "\u{1F9D8}", desc: "Hold plank. Boosts strength + stamina.", cost: 15 },
 ];
 
 const POSITIONS = ["ST", "LW", "RW", "CAM", "CM", "CDM", "CB", "LB", "RB", "GK"];
